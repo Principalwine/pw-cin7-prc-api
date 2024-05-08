@@ -1,0 +1,13 @@
+{
+  "SaleID": "F7B3F1F5-28DB-49F7-BFB8-65210B81FC91",
+  "SaleOrderNumber": "SO-10007T",
+  "SaleOrderDate": "2024-05-03",
+  "CustomerName": "Mule Test5 2May",
+  "CustomerContactName": "0030T00000WUo29QAD",
+  "CustomerContactEmail": null,
+  "SaleRepEmail": "jez@principalwine.com.au",
+  "TaskTypeSign": "0",
+  "IsServiceOnly": "0",
+  "DownloadLink": "https://inventory.dearsystems.com/Sale/DownloadOrder?tenantID=ea424301-eea8-44ca-abbf-e7b08d79b32b&saleTaskID=f7b3f1f5-28db-49f7-bfb8-65210b81fc91&templateID=2c13e055-e526-4429-ae73-77670a7398e4",
+  "EventType": "Sale/Created"
+}

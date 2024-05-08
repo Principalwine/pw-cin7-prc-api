@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="request-to-salesforce-upsert-subflow" doc:id="ac9a3bc4-26bf-422d-a3f6-f6d5d3bf0354" >
+		<logger level="DEBUG" doc:name="Log Outbound" doc:id="6f918596-492e-4c6d-b578-f890968bb7e6" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to Sf system api",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+		<http:request method="POST" doc:name="Request to Salesforce Upsert API" doc:id="a1801267-c49a-4927-badf-8ef75a773bec" config-ref="HTTP_Request_configuration_sfdc" path="${sfdc.upsert}" />
+		<logger level="DEBUG" doc:name="Log Inbound" doc:id="1c3c3575-5643-496b-8404-fcf352a9b242" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to Sf system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+	</sub-flow>
+</mule>

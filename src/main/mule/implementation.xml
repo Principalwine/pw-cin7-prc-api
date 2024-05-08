@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="account-change-event-flow" doc:id="02ff29d2-d68e-4620-baf0-f18807c45bda" >
+		<salesforce:subscribe-channel-listener doc:id="13877416-dcad-491e-a6e6-58fee2c24f39" config-ref="Salesforce_Config" streamingChannel="${salesforce.account-event}" doc:name="Account Change Event Listener"/>
+		<ee:transform doc:name="Transform Message" doc:id="a405a06a-094a-4262-91e2-7c7b046a5cc9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="2fa568a1-4d2b-46f2-8ce3-7eeda9c0d13c" message="#[payload]"/>
+	</flow>
+	<flow name="contact-change-event-flow" doc:id="7fbbb02a-3eec-4fee-a1e2-7c5f9a3e256a" >
+		<salesforce:subscribe-channel-listener streamingChannel="${salesforce.contact-event}" doc:name="Contact Change Event Listener" doc:id="12b12246-3fe4-4413-940f-7aad361537a3" config-ref="Salesforce_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="545d4d26-c791-4c6c-a34c-20852daafe29">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="4049ee64-c6a1-4864-ad98-b8a392980996" message="#[payload]" />
+	</flow>
+</mule>

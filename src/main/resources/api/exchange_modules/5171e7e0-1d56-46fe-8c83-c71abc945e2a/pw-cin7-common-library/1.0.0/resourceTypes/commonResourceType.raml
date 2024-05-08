@@ -1,0 +1,80 @@
+#%RAML 1.0 ResourceType
+
+    get?:
+      description: This endpoint is used to retrieve all details about <<resourcePathName>>
+      responses: 
+        200:
+          body: 
+            application/json:
+              type: |
+                <<getRespDataType>>
+              example: |
+                <<getRespExample>>
+    
+    post?:
+      description: This endpoint is used to create <<resourcePathName>>
+      body: 
+        application/json:
+          type: |
+            <<postReqDataType>>
+          example: |
+            <<postReqExample>>
+      responses:
+        201:
+          body:
+            application/json:
+              type: |
+                <<postRespDataType>>
+              example: |
+                <<postRespExample>>
+  
+    patch?:
+      description: This endpoint is used to create <<resourcePathName>>
+      body: 
+        application/json:
+          type: |
+            <<patchReqDataType>>
+          example: |
+            <<patchReqExample>>
+      responses:
+        200:
+          body:
+            application/json:
+              type: |
+                <<patchRespDataType>>
+              example: |
+                <<patchRespExample>>
+    put?:
+      description: This endpoint is used to create <<resourcePathName>>
+      body: 
+        application/json:
+          type: |
+            <<putReqDataType>>
+          example: |
+            <<putReqExample>>
+      responses:
+        200:
+          body:
+            application/json:
+              type: |
+                <<putRespDataType>>
+              example: |
+                <<putRespExample>>
+    
+    delete?:
+      description: This endpoint is used to delete <<resourcePathName>>
+      body: 
+        application/json:
+          type: |
+            <<deleteReqDataType>>
+          example: |
+            <<deleteReqExample>>
+      responses:
+        200:
+          body:
+            application/json:
+              type: |
+                <<deleteRespDataType>>
+              example: |
+                <<deleteRespExample>>
+      

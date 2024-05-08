@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="customer-contact-address-implementation-subflow" doc:id="63d04d4f-ca6c-4bc3-b7e6-1e39fb978c1b" >
+		<ee:transform doc:name="Customer, contact and address Mapping to Salesforce" doc:id="608fdd75-2c12-408f-90dc-4230da886a6b" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="contact" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.CustomerDetailsList map ((item, index) ->
+Data: item.Contacts map ((item, index) -> 
+{Cin7ID__c: item.ID,
+Name: item.Name,
+Phone: item.Phone,
+MobilePhone: item.MobilePhone,
+Fax: item.Fax,
+Email: item.Email,
+Website__c: item.Website,
+Comment__c: item.Comment,
+Default__c: item.Default,
+Include_In_Emails__c:item.IncludeInEmail,
+//LastModifiedOn__c:
+//Cin7_AccountID__c
+})
+ )]]></ee:set-variable>
+				<ee:set-variable variableName="customer" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.CustomerDetailsList map ((item, index) -> 
+{
+    Cin7ID__c: item.ID,
+Name: item.Name,
+Status__c: item.Status,
+Currency__c: item.Currency,
+Payment_Term__c: item.PaymentTerm,
+AccountReceivable__c:item.AccountReceivable,
+Tax_Rule__c: item.TaxRule,
+Location_Name__c:item.Location,
+Discount__c: item.Discount,
+Comments__c:item.Comments,
+Credit_Limit__c: item.CreditLimit,
+Tags__c:item.Tags,
+Attribute_Set__c:item.AttributeSet,
+On_Credit_Hold__c:item.IsOnCreditHold,
+Price_tier__c: item.PriceTier,
+Default_Carrier__c: item.Carrier,
+Sales_Representative__c: item.SalesRepresentative,
+Tax_number__c: item.TaxNumber,
+LastModifiedOn__c: item.LastModifiedOn
+})]]></ee:set-variable>
+				<ee:set-variable variableName="address" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.CustomerDetailsList map ((item, index) ->
+Data: item.Addresses map ((item, index) -> 
+{
+Cin7ID__c: item.ID,
+street: item.Line1 ++ item.Line2,
+city: item.City,
+state: item.State,
+postalCode: item.Postcode,
+country: item.Country,
+AddressType: item.Type,
+DefaultForType__c: item.DefaultForType
+})
+ )]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  "objectName": "Account",&#10;  "externalField": "Cin7ID__c",&#10;  "data": vars.customer&#10;}]' doc:name="Set Customer upsert Payload" doc:id="e080c907-06ba-4b87-b984-70555b9a6120" />
+		<flow-ref doc:name="request-to-salesforce-upsert-subflow" doc:id="43afe35e-d8cd-4fd9-9fb2-d10f4f4933b7" name="request-to-salesforce-upsert-subflow"/>
+		<set-payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  "objectName": "Contact",&#10;  "externalField": "Cin7ID__c",&#10;  "data": flatten(vars.contact.*Data)&#10;}]' doc:name="Set Contacts upsert Payload" doc:id="61104825-77cc-4200-b8ff-14df29aaf6bb" />
+		<flow-ref doc:name="request-to-salesforce-upsert-subflow" doc:id="3760dfa9-d4d4-432d-ae0d-d8dc3f226cf9" name="request-to-salesforce-upsert-subflow"/>
+		<set-payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  "objectName": "Address",&#10;  "externalField": "Cin7ID__c",&#10;  "data": flatten(vars.address.*Data)&#10;}]' doc:name="Set Addresses upsert Payload" doc:id="4daab4b2-ebab-4c83-8d05-a401a553135d" />
+		<flow-ref doc:name="request-to-salesforce-upsert-subflow" doc:id="aa827e9d-1bdf-4957-8c9d-e3ff15c09d38" name="request-to-salesforce-upsert-subflow"/>
+	</sub-flow>
+</mule>
