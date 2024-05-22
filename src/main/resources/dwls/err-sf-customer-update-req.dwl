@@ -9,7 +9,7 @@ var request = vars.requestPayload.requestBody.payload
   "data": [
     {
       "Id": request.ChangeEventHeader.recordIds[0],
-      "Error_log__c": payload.description default "Error"
+      "Error_log__c": payload.description default error.muleMessage.typedValue.errorDescription default "Error"
     }
   ]
 }

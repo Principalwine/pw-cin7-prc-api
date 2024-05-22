@@ -8,8 +8,8 @@ var request = vars.requestPayload.requestBody.payload
   "externalField": "Id",
   "data": [
     {
-      "Id": request.ChangeEventHeader.recordIds[0],
-      "Error_log__c": payload.description default "Error"
+      "Id": request.ChangeEventHeader.recordIds[0] default request.Id,
+      "Error_log__c": payload.description default error.muleMessage.typedValue.errorDescription default "Error"
     }
   ]
 }

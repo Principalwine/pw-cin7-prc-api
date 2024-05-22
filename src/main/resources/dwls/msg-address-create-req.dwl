@@ -16,7 +16,7 @@ var address = payload.requestBody.payload
 	          Postcode: address.PostalCode__c default "",
 	          Country: address.Country__c default "",
 	          Type: address.Type__c,
-	          DefaultForType: address.DefaultForType__c default false,
+	          DefaultForType: address.DefaultForType__c as Boolean default false,
 		}
 	],
 

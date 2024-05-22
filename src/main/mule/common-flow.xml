@@ -10,6 +10,19 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	
 	<sub-flow name="request-to-salesforce-upsert-subflow" doc:id="ac9a3bc4-26bf-422d-a3f6-f6d5d3bf0354" >
 		<logger level="DEBUG" doc:name="Log Outbound" doc:id="6f918596-492e-4c6d-b578-f890968bb7e6" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to Sf system api",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+		<ee:transform doc:name="Request Transform" doc:id="b2fb83da-5549-4aca-868a-2fd312c98637" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "objectName": payload.objectName,
+  "externalField": payload.externalField,
+	"data": payload.data map ((item) -> item ++ {
+    fieldsToNull: keysOf(item) filter(isEmpty(item[$]))
+})}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 		<http:request method="POST" doc:name="Request to Salesforce Upsert API" doc:id="a1801267-c49a-4927-badf-8ef75a773bec" config-ref="HTTP_Request_configuration_sfdc" path="${sfdc.upsert}" />
 		<logger level="DEBUG" doc:name="Log Inbound" doc:id="1c3c3575-5643-496b-8404-fcf352a9b242" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to Sf system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
 	</sub-flow>
@@ -33,7 +46,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="request-to-salesforce-query-subflow" doc:id="f8359e74-eeca-483f-bc55-310187567cf1" >
 		<logger level="DEBUG" doc:name="Log Outbound" doc:id="78faa585-8886-4cf5-bd52-d21dbd2fadbe" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to Sf system api",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
 		<http:request method="POST" doc:name="Request to Salesforce Query API" doc:id="77f8bf0a-4751-4802-9cf0-3e7d6b7d9771" config-ref="HTTP_Request_configuration_sfdc" path="${sfdc.query}" target="query">
-			<http:body ><![CDATA[#[vars.sales]]]></http:body>
+			<http:body ><![CDATA[#[vars.query]]]></http:body>
 		</http:request>
 		<logger level="DEBUG" doc:name="Log Inbound" doc:id="0e955b51-d333-4d5e-98ec-1cb1f3869188" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to Sf system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' /></sub-flow>
 

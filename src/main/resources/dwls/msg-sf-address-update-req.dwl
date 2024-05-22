@@ -14,8 +14,8 @@ var resPayload = payload.data.Addresses filter((item) -> item.ID == request.Cin7
     {
       //"Id": request.ChangeEventHeader.recordIds[0],
       "Cin7ID__c": resPayload[0].ID,
-      //"LastModifiedOn__c": resPayload[0].LastModifiedOn,
-      //"Error_log__c": "",
+      "LastModifiedOn__c": payload.data.LastModifiedOn,
+      "Error_log__c": "",
       "Account__r": {
         "Cin7ID__c": request.Cin7_AccountID__c
       }

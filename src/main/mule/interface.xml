@@ -4,6 +4,7 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
     <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f51390bf-5a33-4789-adac-43ec12fa70c2" >
 		<http:listener-connection host="0.0.0.0" port="8083" />
 	</http:listener-config>
+	
 	<flow name="cin7-prc-api-main">
         <http:listener config-ref="cin7-prc-api-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -103,11 +104,7 @@ output application/json
     <flow name="account-contact-address-change-event-flow" doc:id="02ff29d2-d68e-4620-baf0-f18807c45bda">
 		<salesforce:subscribe-channel-listener streamingChannel="${salesforce.account-event}" doc:name="Account-Contact-Address Change Event Listener" doc:id="ea8dbf4c-0dbe-4879-aac8-b10a4b7c1c02" config-ref="Salesforce_Config"/>
 		<logger level="INFO" doc:name="Request Logger" doc:id="46e70389-c8e0-4215-9a4c-2f9fe4ae66bd" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Request Logger",&#10;  MetaData: "Request received in cin7-prc-api Customer/Contact event",&#10;  correlationId: correlationId,&#10;  payload: payload&#10;}]' />
-		<ee:transform doc:name="Create Request" doc:id="a405a06a-094a-4262-91e2-7c7b046a5cc9" >
-			<ee:message >
-				<ee:set-payload resource="dwls/msg-req-parameter-customer.dwl" />
-			</ee:message>
-		</ee:transform>
+		<flow-ref doc:name="Create Request" doc:id="7c3bc6b7-e2ad-4748-a57a-dbad3b7b8398" name="get-account-contact-address-from-sf" />
 		<logger level="INFO" doc:name="Log Start" doc:id="abb2f30f-122e-4b7b-b016-5535552913d0" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ENTRY",&#10;  MetaData: "Cin7-process-api Customer event started",&#10;  correlationId: correlationId&#10;}]' />
 		<flow-ref doc:name="sf-cin7-implementationSub_Flow" doc:id="c4b55e72-1208-4d96-bdb2-63d079edc44a" name="sf-cin7-implementationSub_Flow"/>
 		<logger level="INFO" doc:name="Log Exit" doc:id="2fa568a1-4d2b-46f2-8ce3-7eeda9c0d13c" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended upsert in Cin7 and also synced the response back to Salesforce",&#10;  correlationId: correlationId&#10;}]'/>
@@ -123,8 +120,8 @@ output application/json
 		<flow-ref doc:name="sf-cin7-implementationSub_Flow" doc:id="cf503c84-4eae-4e8d-ba09-a40c386f9807" name="sf-cin7-implementationSub_Flow" />
 		<logger level="INFO" doc:name="Log Exit" doc:id="4049ee64-c6a1-4864-ad98-b8a392980996" message='#[%dw 2.0&#10;output application/json&#10;&#45;&#45;-&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended upsert in Cin7 and synced it back in Salesforce",&#10;  correlationId: correlationId&#10;}&#93;' />
 	</flow> [STUDIO] -->
-	<!-- [STUDIO:"interfaceFlow"]<flow name="interfaceFlow" doc:id="e7843c1e-18aa-4261-9216-8ec8167b97dc" initialState="stopped">
+	<flow name="interfaceFlow" doc:id="e7843c1e-18aa-4261-9216-8ec8167b97dc">
 		<http:listener doc:name="Listener" doc:id="8caa3049-f327-4885-8cbb-7138d2cc492a" config-ref="HTTP_Listener_config" path="/test"/>
 		<flow-ref doc:name="Flow Reference" doc:id="ec0e6758-ba99-4975-afe1-f76fff733d11" name="account-contact-address-change-event-flow"/>
-	</flow> [STUDIO] -->
+	</flow>
 </mule>

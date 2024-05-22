@@ -1,8 +1,10 @@
 %dw 2.0
 output application/json
 var request = vars.requestPayload.requestBody.payload
-var reqUserName = if(!isEmpty(request.Name.FirstName)) request.Name.FirstName ++ " " ++ request.Name.LastName
-				  else request.Name.LastName
+var reqUserName = if(isEmpty(request.LastName)) if(!isEmpty(request.Name.FirstName)) request.Name.FirstName ++ " " ++ request.Name.LastName
+				  					else request.Name.LastName
+				  else if(!isEmpty(request.FirstName))request.FirstName ++ " " ++ request.LastName
+				  	   else request.LastName
 var resPayload = payload.data filter((item) -> item.Name == reqUserName)
 ---
 {

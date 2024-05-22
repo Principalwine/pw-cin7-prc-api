@@ -31,3 +31,15 @@ fun getAccountType(AccountType)=
 fun getAccountReceivableType(accountReceivable)=
 	if (accountReceivable =="610") "610: Accounts Receivable"
 	else "610: Accounts Receivable"
+	
+fun getMarketingConsent(value)=
+	if(value == 1) "Unknown"
+	else if(value == 2) "Opt In"
+	else if(value == 3) "Opt Out"
+	else null
+	
+fun getMarketingConsentForCin7(value)=
+	if(value == "Unknown") 1
+	else if(value == "Opt In") 2
+	else if(value == "Opt Out") 3
+	else 0

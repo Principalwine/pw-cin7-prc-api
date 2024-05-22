@@ -64,9 +64,9 @@ vars.requestPayload.httpRequest.headers]]]></http:headers>
 output application/json
 ---
 {
-	errorCode: payload.errorCode default 500,
-	description: payload.description default "Unknown description",
-	message: payload.message default "Error occured while processing the request in cin7-proc-api"
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	description: error.muleMessage.typedValue.errorDescription default "Unknown description",
+	message: vars.errorContext default "Error occured while processing the request in cin7-proc-api"
 }]]></ee:set-variable>
 									</ee:variables>
 								</ee:transform>
@@ -129,5 +129,57 @@ vars.entity default (vars.requestPayload.operation ++ " Sync.")]]></ee:set-varia
 			</error-handler>
 		</try>
 
+	</sub-flow>
+	<sub-flow name="get-account-contact-address-from-sf" doc:id="10dacfe4-bb4a-49ae-947f-1636d63b7876" >
+		<try doc:name="Try" doc:id="a7a1125a-f3a0-480a-98e9-40625347a720" >
+			<choice doc:name="Choice" doc:id="d3312f83-8810-4fac-9251-2ec714bbc3a5">
+			<when expression='#[payload.data.payload.ChangeEventHeader.changeType as String == "UPDATE" and (isEmpty(payload.data.payload.Cin7ID__c) or payload.data.payload.ChangeEventHeader.entityName == "Contact")]'>
+				<set-variable value='#[if(payload.data.payload.ChangeEventHeader.entityName == "Account")  "msg-sf-query-account" &#10;else if(payload.data.payload.ChangeEventHeader.entityName == "Contact") "msg-sf-query-contact"&#10;else "msg-sf-query-address"]' doc:name="queryEntity" doc:id="80a73fd6-fbe5-485e-a5af-c876b57579e6" variableName="queryEntity" />
+				<ee:dynamic-evaluate doc:name="Get SF Query Object" doc:id="f4a89bba-4674-4e11-9cce-2e768fa4d70a" expression="#[readUrl(&quot;classpath://dwls/&quot; ++ (vars.queryEntity as String) ++ &quot;.dwl&quot;, 'text/plain')]" target="query" />
+				<flow-ref doc:name="request-to-salesforce-query-subflow" doc:id="a596a3ff-48d5-4e7f-a38a-0899a7058ef5" name="request-to-salesforce-query-subflow" />
+				<ee:transform doc:name="Create Request" doc:id="31775270-5834-4934-81f5-5c7aa8f466d7">
+					<ee:message>
+						<ee:set-payload resource="dwls/msg-req-parameter-customer-update-without-id.dwl" />
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Create Request" doc:id="cc1f9614-5e3a-4844-9c33-3ad98ad75785">
+					<ee:message>
+						<ee:set-payload resource="dwls/msg-req-parameter-customer.dwl" />
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="03855c5a-b393-45d5-8681-33f3081cd9ba" >
+					<set-variable value='#["Error while processing the create request in Cin-process-API !!"]' doc:name="errorContext" doc:id="9412cb07-f47c-45f8-882a-34c935a8e0ba" variableName="errorContext" />
+					<ee:transform doc:name="Error Transformation" doc:id="f1ecaf54-d43e-4ba8-8687-2d14489c2efb" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+}]]></ee:set-payload>
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="system" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.system default "Salesforce to Cin7 Sync."]]></ee:set-variable>
+							<ee:set-variable variableName="entity" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.entity default (vars.requestPayload.operation ++ " Sync.")]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<logger level="INFO" doc:name="Log Error" doc:id="e61a3cad-43d2-4c50-b52c-74e829cee031" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Error",&#10;  MetaData: "Error while syncing data to CIN7",&#10;  correlationId: correlationId,&#10;  errorPayload: payload&#10;}]' />
+					<flow-ref doc:name="send-email-subflow" doc:id="f9449164-254a-4b9a-ae27-f010026e8aa2" name="send-email-subflow" />
+				</on-error-propagate>
+			</error-handler>
+		</try>
 	</sub-flow>
 </mule>

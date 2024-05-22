@@ -101,7 +101,9 @@ output application/json
 {(vars.contact map (item) -> {
   "objectName": "Contact",
   "externalField": "Cin7ID__c",
-  "data": item.Data map ((contact) -> contact ++ {Account: {"Cin7ID__c": item.account__c}})
+  "data": item.Data map ((contact) -> contact ++ {Account: {"Cin7ID__c": item.account__c}} 
+  	++ {LastModifiedOn__c: item.lastModified}
+  )
 })}]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
@@ -231,7 +233,7 @@ vars.system default "Cin7 to Salesforce sync."
 			<ee:message >
 			</ee:message>
 			<ee:variables >
-				<ee:set-variable variableName="sales" ><![CDATA[%dw 2.0
+				<ee:set-variable variableName="query" ><![CDATA[%dw 2.0
 output application/json
 ---
 {
