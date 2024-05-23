@@ -1,0 +1,257 @@
+#%RAML 1.0 DataType 
+type: object
+properties:
+  NumberOfProducts:
+    type: number
+    required: false
+  ProductDetailsList:
+    type: array
+    items:
+      type: object
+      properties:
+        Event:
+          type: string
+          required: false
+        ID:
+          type: string
+          required: false
+        SKU:
+          type: string
+          required: false
+        Name:
+          type: string
+          required: false
+        Category:
+          type: string
+          required: false
+        Brand:
+          type: string
+          required: false
+        Type:
+          type: string
+          required: false
+        CostingMethod:
+          type: string
+          required: false
+        DropShipMode:
+          type: string
+          required: false
+        DefaultLocation:
+          type: string
+          required: false
+        Length:
+          type: number
+          required: false
+        Width:
+          type: number
+          required: false
+        Height:
+          type: number
+          required: false
+        Weight:
+          type: number
+          required: false
+        UOM:
+          type: string
+          required: false
+        WeightUnits:
+          type: string
+          required: false
+        DimensionsUnits:
+          type: string
+          required: false
+        Barcode:
+          type: string
+          required: false
+        MinimumBeforeReorder:
+          type: number
+          required: false
+        ReorderQuantity:
+          type: number
+          required: false
+        PriceTier1:
+          type: number
+          required: false
+        PriceTier2:
+          type: number
+          required: false
+        PriceTier3:
+          type: number
+          required: false
+        PriceTier4:
+          type: number
+          required: false
+        PriceTier5:
+          type: number
+          required: false
+        PriceTier6:
+          type: number
+          required: false
+        PriceTier7:
+          type: number
+          required: false
+        PriceTier8:
+          type: number
+          required: false
+        PriceTier9:
+          type: number
+          required: false
+        PriceTier10:
+          type: number
+          required: false
+        PriceTiers:
+          type: object
+          properties:
+            Wholesale:
+              type: number
+              required: false
+            Buy:
+              type: number
+              required: false
+            Buy - Euro:
+              type: number
+              required: false
+            Buy - Pound:
+              type: number
+              required: false
+            Wholesale - WA:
+              type: number
+              required: false
+            Buy - NZD:
+              type: number
+              required: false
+            Not Used (7):
+              type: number
+              required: false
+            Not Used (8):
+              type: number
+              required: false
+            Not Used (9):
+              type: number
+              required: false
+            Baseline Cost:
+              type: number
+              required: false
+        AverageCost:
+          type: number
+          required: false
+        ShortDescription:
+          type: string
+          required: false
+        InternalNote:
+          type: string
+          required: false
+        Description:
+          type: string
+          required: false
+        AdditionalAttribute1:
+          type: string
+          required: false
+        AdditionalAttribute2:
+          type: string
+          required: false
+        AdditionalAttribute3:
+          type: string
+          required: false
+        AdditionalAttribute4:
+          type: string
+          required: false
+        AdditionalAttribute5:
+          type: string
+          required: false
+        AdditionalAttribute6:
+          type: string
+          required: false
+        AdditionalAttribute7:
+          type: string
+          required: false
+        AdditionalAttribute8:
+          type: string
+          required: false
+        AdditionalAttribute9:
+          type: string
+          required: false
+        AdditionalAttribute10:
+          type: string
+          required: false
+        AttributeSet:
+          type: string
+          required: false
+        DiscountRule:
+          type: string
+          required: false
+        Tags:
+          type: string
+          required: false
+        Status:
+          type: string
+          required: false
+        StockLocator:
+          type: string
+          required: false
+        COGSAccount:
+          type: string | nil
+          required: false
+        RevenueAccount:
+          type: string | nil
+          required: false
+        ExpenseAccount:
+          type: string | nil
+          required: false
+        InventoryAccount:
+          type: string | nil
+          required: false
+        PurchaseTaxRule:
+          type: string | nil
+          required: false
+        SaleTaxRule:
+          type: string | nil
+          required: false
+        LastModifiedOn:
+          type: string
+          required: false
+        Sellable:
+          type: boolean
+          required: false
+        PickZones:
+          type: string
+          required: false
+        BillOfMaterial:
+          type: boolean
+          required: false
+        AutoAssembly:
+          type: boolean
+          required: false
+        AutoDisassembly:
+          type: boolean
+          required: false
+        QuantityToProduce:
+          type: number
+          required: false
+        AlwaysShowQuantity:
+          type: number
+          required: false
+        AssemblyInstructionURL:
+          type: string
+          required: false
+        AssemblyCostEstimationMethod:
+          type: string
+          required: false
+        BOMType:
+          type: string
+          required: false
+        WarrantyName:
+          type: string | nil
+          required: false
+        HSCode:
+          type: string | nil
+          required: false
+        CountryOfOrigin:
+          type: string | nil
+          required: false
+        CountryOfOriginCode:
+          type: string | nil
+          required: false
+  EventType:
+    type: string
+    required: false

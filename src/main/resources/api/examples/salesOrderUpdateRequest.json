@@ -1,0 +1,13 @@
+{
+  "SaleID": "57910BCA-A1E4-48A3-8C63-930CBDE609F0",
+  "TaskTypeSign": "0",
+  "IsServiceOnly": "0",
+  "SaleOrderNumber": "SO-10006T",
+  "TaskID": "57910BCA-A1E4-48A3-8C63-930CBDE609F0",
+  "CustomerName": "Mule Test5 2May",
+  "CustomerContactName": "Bond OO7",
+  "CustomerContactEmail": "accounts@diisr.test",
+  "SaleRepEmail": "jez@principalwine.com.au",
+  "DownloadLink": "https://inventory.dearsystems.com/Sale/DownloadPickList?tenantID=ea424301-eea8-44ca-abbf-e7b08d79b32b&saleTaskID=57910bca-a1e4-48a3-8c63-930cbde609f0&templateID=9f953948-bc66-475d-8d39-6f7aa874f193",
+  "EventType": "Sale/PickAuthorised"
+}

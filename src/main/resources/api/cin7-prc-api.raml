@@ -1,0 +1,74 @@
+#%RAML 1.0
+title: cin7-prc-api
+
+mediaType: 
+- application/json
+
+uses:
+  commonLib: /exchange_modules/5171e7e0-1d56-46fe-8c83-c71abc945e2a/pw-cin7-common-library/1.0.0/pw-cin7-common-library.raml
+  datatypesLib: /exchange_modules/5171e7e0-1d56-46fe-8c83-c71abc945e2a/pw-cin7-common-datatypes/1.0.3/pw-cin7-common-datatypes.raml
+
+/customers:
+  is: [commonLib.clientIdSecret, commonLib.trackable, commonLib.errorResponses]
+  type:
+    commonLib.resources:
+      postReqDataType: 
+        type: datatypesLib.customerRequest
+      postReqExample: !include examples/customerRequest.json
+      postRespDataType: 
+        type: datatypesLib.cin7DummyResponse
+      postRespExample: !include examples/cin7DummyResponse.json
+
+  post: 
+    description: Customer Trigger Request
+
+/products:
+  is: [commonLib.clientIdSecret, commonLib.trackable, commonLib.errorResponses]
+  type:
+    commonLib.resources:
+      postReqDataType: 
+        type: datatypesLib.productRequest
+      postReqExample: !include examples/productRequest.json
+      postRespDataType: 
+        type: datatypesLib.cin7DummyResponse
+      postRespExample: !include examples/cin7DummyResponse.json
+
+  post: 
+    description: Customer Trigger Request
+
+/stocks:
+  is: [commonLib.clientIdSecret, commonLib.trackable, commonLib.errorResponses]
+  type:
+    commonLib.resources:
+      postReqDataType: 
+        type: datatypesLib.stockRequest
+      postReqExample: !include examples/stockRequest.json
+      postRespDataType: 
+        type: datatypesLib.cin7DummyResponse
+      postRespExample: !include examples/cin7DummyResponse.json
+
+  post: 
+    description: Customer Trigger Request
+
+/salesOrders:
+  is: [commonLib.clientIdSecret, commonLib.trackable, commonLib.errorResponses]
+  type:
+    commonLib.resources:
+      postReqDataType: 
+        type: datatypesLib.salesOrderCreateRequest
+      postReqExample: !include examples/salesOrderCreateRequest.json
+      postRespDataType: 
+        type: datatypesLib.cin7DummyResponse
+      postRespExample: !include examples/cin7DummyResponse.json
+
+      putReqDataType:
+        type: datatypesLib.salesOrderUpdateRequest
+      putReqExample: !include examples/salesOrderUpdateRequest.json
+      putRespDataType: 
+        type: datatypesLib.cin7DummyResponse
+      putRespExample: !include examples/cin7DummyResponse.json
+
+  post: 
+    description: Sales Order Create Trigger Request
+  put:
+    description: Sales Order Update Trigger Request

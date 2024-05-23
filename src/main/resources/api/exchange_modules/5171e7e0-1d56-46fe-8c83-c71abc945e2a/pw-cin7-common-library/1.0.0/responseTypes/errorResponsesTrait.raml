@@ -1,0 +1,73 @@
+#%RAML 1.0 Trait
+usage: Apply this trait to define common response codes return-ed by all API implementations.
+
+responses: 
+  400:
+    description: The server cannot or will not process the request due to something that is perceived to be a client error.
+    body:
+      application/json:
+        type: responseTypes
+        example: !include responseExamples/error400.raml
+
+  401:
+    description: No valid credentials found to access the requested resource.
+    body:
+      application/json:
+        type: responseTypes
+        example: !include responseExamples/error401.raml
+
+  403:
+    description: The server has refused access to the requested resource.
+    body:
+      application/json:
+        type: responseTypes
+        example: !include responseExamples/error403.raml
+
+  404:
+    description: The server cannot find the requested resource.
+    body:
+      application/json:
+        type: responseTypes
+        example: !include responseExamples/error404.raml
+
+  405:
+    description: The request method is not supported for the requested resource.
+    body:
+      application/json:
+        type: responseTypes
+        example: !include responseExamples/error405.raml
+
+  406:
+    description: The target resource does not have a current representation that would be acceptable to the user agent.
+    body:
+      application/json:
+        type: responseTypes
+        example: !include responseExamples/error406.raml
+
+  415:
+    description:  The accept header specified an unsupported media type.
+    body:
+      application/json:
+        type: responseTypes
+        example: !include responseExamples/error415.raml
+
+  429:
+    description: An API request rate limit has been exceeded.
+    body:
+      application/json:
+        type: responseTypes
+        example: !include responseExamples/error429.raml
+
+  500:
+    description: An internal error occurred while processing the API request.
+    body:
+      application/json:
+        type: responseTypes
+        example: !include responseExamples/error500.raml
+
+  501:
+    description: The method has not been implemented.
+    body:
+      application/json:
+        type: responseTypes
+        example: !include responseExamples/error500.raml

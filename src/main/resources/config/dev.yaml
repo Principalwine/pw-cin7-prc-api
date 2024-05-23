@@ -1,0 +1,74 @@
+app:
+  autodiscovery: "19492437"
+
+salesforce:
+  username: "siddhartha.pal@nttdata.com.sachin"
+  password: "![ItAaX7qTsEywysnn8T89eQ==]"
+  token: "![VaF4aS6gYQeAwFtFlIkTb+xzP8DRx8oNePxa6wSHz7M=]"
+  url: "https://principalwine--sachin.sandbox.my.salesforce.com/services/Soap/u/58.0"
+  account-event: "/data/Cin7Events__chn"
+#  contact-event: "/data/Cin7Events__chn"
+  
+sfdc:
+  basepath: "/api/v1"
+  host: "pw-sf-sys-api-dev-o4o3m1.5sc6y6-2.usa-e2.cloudhub.io"
+  port: ""
+  client-id: "![dSnqtH73b+K9XWFeVWquErgXi9NQsw1cBCJsHBG+sf9d1/QugFivAQ==]"
+  client-secret: "![KcmRb2Ji/e7M+J0aZHTssR59lPrjftCgPfgNeAxP3aQ80HuYTwF5mg==]"
+  upsert: "/upsert"
+  query: "/query"
+  
+operation:
+  CREATE-CUSTOMER:
+    dwl: "msg-customer-create-req"
+    sfDwl: "msg-sf-customer-create-req"
+    errDwl: "err-sf-customer-create-req"
+    path: "/api/customers"
+    
+    
+  UPDATE-CUSTOMER:
+    dwl: "msg-customer-update-req"
+    sfDwl: "msg-sf-customer-update-req"
+    errDwl: "err-sf-customer-update-req"
+    path: "/api/customers"
+    
+  CREATE-CONTACT:
+    dwl: "msg-contact-create-req"
+    sfDwl: "msg-sf-contact-create-req"
+    errDwl: "err-sf-contact-create-req"
+    path: "/api/contacts"
+    
+  UPDATE-CONTACT:
+    dwl: "msg-contact-update-req"
+    sfDwl: "msg-sf-contact-update-req"
+    errDwl: "err-sf-contact-update-req"
+    path: "/api/contacts"
+    
+  CREATE-ADDRESS:
+    dwl: "msg-address-create-req"
+    sfDwl: "msg-sf-address-create-req"
+    errDwl: "err-sf-address-req"
+    path: "/api/addresses"
+    
+  UPDATE-ADDRESS:
+    dwl: "msg-address-update-req"
+    sfDwl: "msg-sf-address-update-req"
+    errDwl: "err-sf-address-req"
+    path: "/api/addresses"
+    
+cin7-sys-api:
+  host: "pw-cin7-sys-api-dev-o4o3m1.5sc6y6-2.usa-e2.cloudhub.io"
+  protocol: "https"
+  client_id: "![V/IFXu3qOniFumDV7Xy3Q7/3mUfmRnfIm5DAAgm0yCybiQeKOJKlpg==]"
+  client_secret: "![Z+DnxnnqhhJLgjvsIu4CwTjf5KknJoRHEKlwpRtp8hQjjd73tuM++w==]"
+  
+request:
+  response:
+    values: '0..599'
+    
+email:
+  host: "smtp.gmail.com"
+  port: "587"
+  from: "james@principalwine.com.au"
+  recipients: "divyansh.r.kumar@apisero.com, sameet.bhole@apisero.com, prabhat.kumar@apisero.com"
+  password: "![bJQhTx9JApX86gnBXmpZTqLBji1Q9+LS]"

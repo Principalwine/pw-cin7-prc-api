@@ -1,0 +1,17 @@
+#%RAML 1.0 Library
+usage: System datatypes
+
+types:
+# Cin7 datatypes
+
+  productRequest: !include cin7-datatypes/productRequest.raml
+  stockRequest: !include cin7-datatypes/stockRequest.raml
+  customerRequest: !include cin7-datatypes/customerRequest.raml
+  salesOrderCreateRequest: !include cin7-datatypes/saleOrderCreate.raml
+  salesOrderUpdateRequest: !include cin7-datatypes/saleOrderUpdate.raml
+  cin7DummyResponse: !include cin7-datatypes/dummyResponse.raml
+
+# salesforce datatypes
+
+  upsertRequest: !include salesforce-datatypes/upsertDataType.raml
+  salesforceResponse: !include salesforce-datatypes/responseDataType.raml

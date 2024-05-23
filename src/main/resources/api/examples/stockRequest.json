@@ -1,0 +1,36 @@
+[
+  {
+    "ID": "bb908044-e181-4301-9f57-00201920ce0b",
+    "SKU": "SOLFAGA200675",
+    "Name": "La Ferme de Sato Alyssum Gamay 2020",
+    "Barcode": null,
+    "Location": "14 Degrees",
+    "Bin": null,
+    "Batch": null,
+    "ExpiryDate": null,
+    "Category": "Red",
+    "OnHand": 14,
+    "Allocated": 2,
+    "Available": 12,
+    "OnOrder": 0,
+    "StockOnHand": 302.5792,
+    "MaxRows": 10
+  },
+  {
+    "ID": "bb908044-e181-4301-9f57-00201920ce0b",
+    "SKU": "SOLFAGA200675",
+    "Name": "La Ferme de Sato Alyssum Gamay 2020",
+    "Barcode": null,
+    "Location": "ARAMEX DELIVERIES DAMAGED IN TRANSIT",
+    "Bin": null,
+    "Batch": null,
+    "ExpiryDate": null,
+    "Category": "Red",
+    "OnHand": 0,
+    "Allocated": 0,
+    "Available": 0,
+    "OnOrder": 0,
+    "StockOnHand": 0,
+    "MaxRows": 10
+  }
+]

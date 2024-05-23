@@ -1,0 +1,215 @@
+#%RAML 1.0 Library
+usage:
+
+# resourceTypes:
+#   cin7: 
+#     get?:
+#       description: This endpoint is used to retrieve all details about <<resourcePathName>>
+#       responses: 
+#         200:
+#           body: 
+#             application/json:
+#               type: |
+#                 <<getRespDataType>>
+#               example: |
+#                 <<getRespExample>>
+#       is: [isDeleted,hasNotFound,hasTimedOut,methodNotAllowed,Unauthorized,hasBadRequest,serviceUnavailable,internalServerError]
+    
+#     post?:
+#       description: This endpoint is used to create <<resourcePathName>>
+#       body: 
+#         application/json:
+#           type: |
+#             <<postReqDataType>>
+#           example: |
+#             <<postReqExample>>
+#       responses:
+#         201:
+#           body:
+#             application/json:
+#               type: |
+#                 <<postRespDataType>>
+#               example: |
+#                 <<postRespExample>>
+#       is: [isDeleted,hasNotFound,hasTimedOut,methodNotAllowed,Unauthorized,hasBadRequest,serviceUnavailable,internalServerError]
+  
+#     patch?:
+#       description: This endpoint is used to create <<resourcePathName>>
+#       body: 
+#         application/json:
+#           type: |
+#             <<patchReqDataType>>
+#           example: |
+#             <<patchReqExample>>
+#       responses:
+#         200:
+#           body:
+#             application/json:
+#               type: |
+#                 <<patchRespDataType>>
+#               example: |
+#                 <<patchRespExample>>
+#       is: [isDeleted,hasNotFound,hasTimedOut,methodNotAllowed,Unauthorized,hasBadRequest,serviceUnavailable,internalServerError]
+
+#     put?:
+#       description: This endpoint is used to create <<resourcePathName>>
+#       body: 
+#         application/json:
+#           type: |
+#             <<putReqDataType>>
+#           example: |
+#             <<putReqExample>>
+#       responses:
+#         200:
+#           body:
+#             application/json:
+#               type: |
+#                 <<putRespDataType>>
+#               example: |
+#                 <<putRespExample>>
+#       is: [isDeleted,hasNotFound,hasTimedOut,methodNotAllowed,Unauthorized,hasBadRequest,serviceUnavailable,internalServerError]
+    
+#     delete?:
+#       description: This endpoint is used to delete <<resourcePathName>>
+#       body: 
+#         application/json:
+#           type: |
+#             <<deleteReqDataType>>
+#           example: |
+#             <<deleteReqExample>>
+#       responses:
+#         200:
+#           body:
+#             application/json:
+#               type: |
+#                 <<deleteRespDataType>>
+#               example: |
+#                 <<deleteRespExample>>
+#       is: [isDeleted,hasNotFound,hasTimedOut,methodNotAllowed,Unauthorized,hasBadRequest,serviceUnavailable,internalServerError]
+
+
+# traits:
+#     headers:
+#       client_id:
+#         type: string
+#       client_secret:
+#         type: string
+
+#     isDeleted:
+#       responses:
+#         200:
+#           headers:
+#             x-correlation-id:
+#                 type: string
+#                 required: true
+#           body:
+#             application/json:
+#               example: 
+#                 {"status":{"code": "SUCCESS", "message": "Successfully Deleted"}}
+    
+#     hasBadRequest:
+#       responses:
+#         400:
+#           headers:
+#             x-correlation-id:
+#                 type: string
+#                 required: true
+#           body:
+#             application/json:
+#               example:
+#                 {"status":{"code": "BAD_REQUEST","message": error.errorMessage,"description": error.detailedDescription}}
+
+#     Unauthorized:
+#       responses:
+#         401:
+#           body:
+#             application/json:
+#               example:
+#                 {"status":{"code": "UNAUTHORIZED","message": "Authentication Error","description": error.detailedDescription}}     
+
+
+#     hasNotFound:
+#       responses:
+#         404:
+#           headers:
+#             x-correlation-id:
+#                 type: string
+#                 required: true
+
+#           body:
+#             application/json:
+#               example:
+#                 {"status":{"code": "NOT_FOUND","message": "Resource Not Found","description": error.detailedDescription}}
+
+#     methodNotAllowed:
+#       responses:
+#         405:
+#           body:
+#             application/json:
+#               example:
+#                 {"status":{"code": "METHOD_NOT_ALLOWED","message": "Method Not Allowed","description": error.detailedDescription}}              
+
+#     hasTimedOut:
+#       responses:
+#         408:
+#           body:
+#             application/json:
+#               example:
+#                 {"status":{"code": "REQUEST_TIMEOUT","message": "Request Time Out","description": error.detailedDescription}}
+                
+#     internalServerError:
+#       responses:
+#         500:
+#           headers:
+#             x-correlation-id:
+#                 type: string
+#                 required: true
+#           body:
+#             application/json:
+#               example:
+#                 {"status":{"code": "INTERNAL_SERVER_ERROR","message": error.errorMessage,"description": error.detailedDescription}}
+
+#     serviceUnavailable:
+#       responses:
+#         501:
+#           headers:
+#             x-correlation-id:
+#                 type: string
+#                 required: true
+#           body:
+#             application/json:
+#               example:
+#                 {"status":{"code": "SERVICE_UNAVAILABLE","message": error.errorMessage,"description": error.detailedDescription}}
+
+# types:
+#   successResponse:
+#     type: object
+#     properties:
+#       status:
+#         type: object
+#         required: true
+
+#         properties:
+#           code:
+#             type: string
+#             required: true
+#             example: "SUCCESS"
+#           message:
+#             type: string
+#             required: true
+#             example: "Successfully Created"
+#       data: 
+#         type: object | array
+#         example:
+#           {}
+
+types:
+  responseTypes: !include responseTypes/dataTypes/commonErrorTypes.raml
+
+resourceTypes:
+  resources: !include resourceTypes/commonResourceType.raml
+
+traits:
+  trackable: !include traits/trackable.raml
+  clientIdSecret: !include traits/clientIdSecret.raml
+  errorResponses: !include responseTypes/errorResponsesTrait.raml

@@ -1,0 +1,115 @@
+{
+  "NumberOfCustomers": 1,
+  "CustomerDetailsList": [
+    {
+      "Event": "Update",
+      "ID": "850dfc22-3655-4a4c-887f-5e62ac6827b8",
+      "Name": "Mule Test5 2May",
+      "Currency": "AUD",
+      "PaymentTerm": "30 days",
+      "Discount": 0,
+      "TaxRule": "GST Free Exports",
+      "Carrier": "DEFAULT Carrier",
+      "SalesRepresentative": "Jez Prideaux",
+      "Location": "14 Degrees",
+      "Comments": null,
+      "AccountReceivable": "610",
+      "RevenueAccount": "200",
+      "PriceTier": "Wholesale",
+      "TaxNumber": null,
+      "AdditionalAttribute1": null,
+      "AdditionalAttribute2": null,
+      "AdditionalAttribute3": null,
+      "AdditionalAttribute4": null,
+      "AdditionalAttribute5": null,
+      "AdditionalAttribute6": null,
+      "AdditionalAttribute7": null,
+      "AdditionalAttribute8": null,
+      "AdditionalAttribute9": null,
+      "AdditionalAttribute10": null,
+      "AttributeSet": "Customer Attributes",
+      "Tags": null,
+      "Status": "Active",
+      "CreditLimit": 0,
+      "IsOnCreditHold": true,
+      "LastModifiedOn": "2024-05-03T10:40:11.887Z",
+      "Addresses": [
+        {
+          "Line1": "L3, Southbank House",
+          "Line2": "",
+          "City": "Melbourne",
+          "State": "VIC",
+          "Postcode": "3131",
+          "Country": "Uruguay",
+          "Type": "Shipping",
+          "DefaultForType": false,
+          "ID": "c7f82a2c-71ee-492e-b4b7-085287d3c964"
+        },
+        {
+          "Line1": "L3, Southbank House",
+          "Line2": "",
+          "City": "Melbourne",
+          "State": "VIC",
+          "Postcode": "3131",
+          "Country": "Uruguay",
+          "Type": "Billing",
+          "DefaultForType": false,
+          "ID": "99e3c3b3-9ae8-4482-be70-b47235ecac1e"
+        },
+        {
+          "Line1": "L3, Southbank House",
+          "Line2": "13 Gallery Ave",
+          "City": "Melbourne",
+          "State": "VIC",
+          "Postcode": "3131",
+          "Country": "Uruguay",
+          "Type": "Business",
+          "DefaultForType": true,
+          "ID": "596ddbe5-ed63-48e9-a4fd-e83939ff2b8a"
+        },
+        {
+          "Line1": "L3, Southbank House",
+          "Line2": "13 Gallery Ave",
+          "City": "Melbourne",
+          "State": "VIC",
+          "Postcode": "3131",
+          "Country": "Uruguay",
+          "Type": "Billing",
+          "DefaultForType": true,
+          "ID": "5c8d227c-52d4-45bd-a03b-f99f734a520d"
+        }
+      ],
+      "Contacts": [
+        {
+          "Name": "0030T00000WUo29QAD",
+          "JobTitle": null,
+          "Phone": null,
+          "MobilePhone": null,
+          "Fax": null,
+          "Email": null,
+          "Website": null,
+          "Default": false,
+          "Comment": null,
+          "IncludeInEmail": false,
+          "MarketingConsent": 0,
+          "ID": "051bc34c-fd5f-48a5-af7b-e5f09003b764"
+        },
+        {
+          "Name": "Bond OO7",
+          "JobTitle": null,
+          "Phone": "0800 4389376",
+          "MobilePhone": null,
+          "Fax": "03 4389379",
+          "Email": "accounts@diisr.test",
+          "Website": null,
+          "Default": true,
+          "Comment": null,
+          "IncludeInEmail": false,
+          "MarketingConsent": 0,
+          "ID": "35c3e706-6530-4142-a17e-f897bafa54a9"
+        }
+      ]
+    }
+  ],
+  "EventType": "Customer/Updated"
+}

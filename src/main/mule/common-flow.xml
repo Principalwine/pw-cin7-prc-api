@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<sub-flow name="request-to-salesforce-upsert-subflow" doc:id="ac9a3bc4-26bf-422d-a3f6-f6d5d3bf0354" >
+		<logger level="DEBUG" doc:name="Log Outbound" doc:id="6f918596-492e-4c6d-b578-f890968bb7e6" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to Sf system api",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+		<ee:transform doc:name="Request Transform" doc:id="b2fb83da-5549-4aca-868a-2fd312c98637" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "objectName": payload.objectName,
+  "externalField": payload.externalField,
+	"data": payload.data map ((item) -> item ++ {
+    fieldsToNull: keysOf(item) filter(isEmpty(item[$]))
+})}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request to Salesforce Upsert API" doc:id="a1801267-c49a-4927-badf-8ef75a773bec" config-ref="HTTP_Request_configuration_sfdc" path="${sfdc.upsert}" />
+		<logger level="DEBUG" doc:name="Log Inbound" doc:id="1c3c3575-5643-496b-8404-fcf352a9b242" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to Sf system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+	</sub-flow>
+
+	<sub-flow name="send-email-subflow" doc:id="9c1b625a-4500-40b6-887e-31f214a655b9">
+		<logger level="INFO" doc:name="Logger" doc:id="efd7fc67-ef3a-43c8-b4cc-6b104c534a5a" message='#["Sending Email"]' />
+		<parse-template doc:name="Parse Template" doc:id="5223219c-6300-40d3-8a57-9d2acf11a091" location="error-response.html" target="emailContent"/>
+		<try doc:name="Try" doc:id="94c7c4a8-1338-40f5-879d-0935ca69eec7" >
+			<email:send doc:name="Send Email" doc:id="29fdaedd-97da-40dd-a676-67b85cfb0e7e" config-ref="Email_SMTP" fromAddress='#[Mule::p("email.from")]' subject="#[&quot;CRITICAL: &quot; ++ vars.entity ++ &quot;: Integration Failure : &quot; ++ upper(p('mule.env')) ++ &quot; Environment&quot;]" toAddresses='#[Mule::p("email.recipients") splitBy ","]'>
+			<email:body contentType="text/html">
+				<email:content><![CDATA[#[vars.emailContent]]]></email:content>
+			</email:body>
+		</email:send>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b34c0421-06b9-4382-9d29-1aa46d09371e" >
+					<logger level="INFO" doc:name="Log SMTP Error" doc:id="75972680-3607-42db-a0bd-c816c1375930" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;"timeStamp": now(),&#10;"correlationId": correlationId,&#10;"appName": app.name,&#10;"logPoint": "Error Sending Notification"&#10;}]'/>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="request-to-salesforce-query-subflow" doc:id="f8359e74-eeca-483f-bc55-310187567cf1" >
+		<logger level="DEBUG" doc:name="Log Outbound" doc:id="78faa585-8886-4cf5-bd52-d21dbd2fadbe" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to Sf system api",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+		<http:request method="POST" doc:name="Request to Salesforce Query API" doc:id="77f8bf0a-4751-4802-9cf0-3e7d6b7d9771" config-ref="HTTP_Request_configuration_sfdc" path="${sfdc.query}" target="query">
+			<http:body ><![CDATA[#[vars.query]]]></http:body>
+		</http:request>
+		<logger level="DEBUG" doc:name="Log Inbound" doc:id="0e955b51-d333-4d5e-98ec-1cb1f3869188" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to Sf system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' /></sub-flow>
+
+</mule>

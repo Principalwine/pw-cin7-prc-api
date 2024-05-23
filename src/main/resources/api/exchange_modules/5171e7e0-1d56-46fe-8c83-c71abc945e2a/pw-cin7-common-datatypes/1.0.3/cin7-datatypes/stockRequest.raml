@@ -1,0 +1,51 @@
+#%RAML 1.0 DataType
+
+type: array
+items:
+  type: object
+  properties:
+    ID:
+      type: string
+      required: false
+    SKU:
+      type: string
+      required: false
+    Name:
+      type: string
+      required: false
+    Barcode:
+      type: string | nil
+      required: false
+    Location:
+      type: string
+      required: false
+    Bin:
+      type: string | nil
+      required: false
+    Batch:
+      type: string | nil
+      required: false
+    ExpiryDate:
+      type: string | nil
+      required: false
+    Category:
+      type: string
+      required: false
+    OnHand:
+      type: number
+      required: false
+    Allocated:
+      type: number
+      required: false
+    Available:
+      type: number
+      required: false
+    OnOrder:
+      type: number
+      required: false
+    StockOnHand:
+      type: number
+      required: false
+    MaxRows:
+      type: number
+      required: false

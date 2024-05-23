@@ -1,0 +1,7 @@
+<html><head><title>Integration Failure</title></head><body>
+<p>Hello,
+You are receiving this alert because: 
+The application #[%dw 2.0 output application/java --- app.name] has a new ERROR notification for entity - #[%dw 2.0 output application/java --- vars.entity default "Unknown Entity"] :</p>
+<b>System detected </b>- #[%dw 2.0 output application/java --- vars.system]<br/>
+<b>Correaltion ID: </b>#[%dw 2.0 output application/java --- correlationId] <br/>
+<b>Failure Details: </b>#[%dw 2.0 output application/java --- payload.errorDescription default payload.description default "Unknown Error. Check Logs for more details."]</body></html>
