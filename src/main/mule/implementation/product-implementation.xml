@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="product-implementation-subFlow" doc:id="a3c30f3c-d6ad-46fa-9482-af5d4abfc64d" >
+		<try doc:name="Try" doc:id="34dda8a5-0cda-4b7a-8287-0df90d5c9291" >
+			<set-variable value="#[payload]" doc:name="Request Payload" doc:id="14ee471a-cce2-4b04-9ce8-ed9a0f2fb67a" variableName="requestPayload" />
+			<ee:dynamic-evaluate doc:name="Set Payload" doc:id="5644013a-99b6-41ea-bb6b-40754c5c25ad" expression="#[readUrl(&quot;classpath://dwls/&quot; ++ (vars.requestPayload.dwl as String) ++ &quot;.dwl&quot;, 'text/plain')]" />
+			<logger level="DEBUG" doc:name="Log Outbound" doc:id="afc75751-3d3d-410d-9c66-795e7cb73500" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to cin system api started",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+			<try doc:name="Try" doc:id="c73c2ce6-4f87-4d26-898b-f5c31c8033aa">
+			<flow-ref doc:name="request-to-salesforce-upsert-subflow" doc:id="4e24b4a0-6792-4023-977b-f8918b1d3ca2" name="request-to-salesforce-upsert-subflow" />
+			<error-handler>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="435184cc-12c1-46db-b107-c45a88262777">
+					<ee:transform doc:name="Error Transformation" doc:id="48e9d1f5-22f6-47c5-8654-fc1c91979ac7">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+}]]></ee:set-payload>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable variableName="entity"><![CDATA["Product Sync"]]></ee:set-variable>
+							<ee:set-variable variableName="system"><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+						<flow-ref doc:name="Send Error Email" doc:id="ae8b2aa1-0f39-4918-aac4-ade1ad6b9bb9" name="send-email-subflow"/>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+			<logger level="DEBUG" doc:name="Log Inbound" doc:id="18cae8dc-e626-407b-bd78-38551cf9e946" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to cin system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="438f7a7c-6b9c-448f-bdc4-d264c5802510" >
+					<ee:transform doc:name="Error Transformation" doc:id="abb36a33-b30f-4651-9972-996a48f8bb9f" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+}]]></ee:set-payload>
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="entity" ><![CDATA["Product Sync"]]></ee:set-variable>
+							<ee:set-variable variableName="system" ><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<flow-ref doc:name="Send Error Email" doc:id="7ed3890f-41be-4a5b-8f8f-b50e913574b9" name="send-email-subflow" />
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+</mule>

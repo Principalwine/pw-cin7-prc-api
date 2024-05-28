@@ -45,23 +45,24 @@ output application/json
 		<logger level="INFO" doc:name="Log Exit" doc:id="adb67f49-4915-48f2-8a29-aaeb2d48b81b" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended upsert in customer, contact and address object in salesforce",&#10;  correlationId: correlationId&#10;}]' />
     </flow>
     <flow name="post:\products:application\json:cin7-prc-api-config">
-        <ee:transform doc:name="Transform Message">
+        <logger level="INFO" doc:name="Log Start" doc:id="8d593497-b2df-4c96-8645-0d8364491c1b" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ENTRY",&#10;  MetaData: "Started upsert in product object in salesforce",&#10;  correlationId: correlationId&#10;}]' />
+		<ee:transform doc:name="Create Request">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
+var operationName = "UPSERT" ++ "-" ++ "PRODUCT"
 ---
 {
-  success: true,
-  apiName: "pw-cin7-exp-api",
-  version: "v1.0.0",
-  correlationId: "05c09130-75a2-11eb-9dcf-aed564bf8171",
-  timestamp: "1970-01-01T00:00:01.001-06:00",
-  data: {
-    message: "Resource created"
-  }
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+	"operation": operationName,
+	"dwl": Mule::p("operation.$(operationName).dwl") as String,
+	//"responseDwl": Mule::p("operation.$(operationName).sfDwl") as String,
+	"errDwl": Mule::p("operation.$(operationName).errDwl") as String,
+	"requestBody": payload
+}]]></ee:set-payload>
             </ee:message>
         </ee:transform>
+		<flow-ref doc:name="product-implementation-subFlow" doc:id="1cacc2e0-c2df-4fa9-bcf4-7c0b7893873a" name="product-implementation-subFlow"/>
+		<logger level="INFO" doc:name="Log Exit" doc:id="5b3f8bde-6b74-40ed-935b-911672f14704" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended upsert in product object in salesforce",&#10;  correlationId: correlationId&#10;}]' />
     </flow>
     <flow name="post:\salesOrders:application\json:cin7-prc-api-config">
         <ee:transform doc:name="Transform Message">
