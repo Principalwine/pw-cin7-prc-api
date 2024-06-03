@@ -73,6 +73,13 @@
 			<version>1.7.3</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
+		<dependency>
+			<groupId>5171e7e0-1d56-46fe-8c83-c71abc945e2a</groupId>
+			<artifactId>cin7-prc-api</artifactId>
+			<version>1.0.1</version>
+			<classifier>raml</classifier>
+			<type>zip</type>
+		</dependency>
 	</dependencies>
 
 	<repositories>

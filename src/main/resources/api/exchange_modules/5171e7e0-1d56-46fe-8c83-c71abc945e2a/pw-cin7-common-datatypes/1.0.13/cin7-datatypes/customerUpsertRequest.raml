@@ -1,0 +1,169 @@
+#%RAML 1.0 DataType
+
+type: object
+properties:
+  ID:
+    type: string | nil
+    required: false
+  Name:
+    type: string
+    required: false
+  Currency:
+    type: string
+    required: false
+  PaymentTerm:
+    type: string
+    required: false
+  Discount:
+    type: number
+    required: false
+  TaxRule:
+    type: string
+    required: false
+  Carrier:
+    type: string
+    required: false
+  SalesRepresentative:
+    type: string | nil
+    required: false
+  Location:
+    type: string
+    required: false
+  Comments:
+    type: string | nil
+    required: false
+  AccountReceivable:
+    type: string
+    required: false
+  RevenueAccount:
+    type: string
+    required: false
+  PriceTier:
+    type: string
+    required: false
+  TaxNumber:
+    type: string | nil
+    required: false
+  AdditionalAttribute1:
+    type: string | nil
+    required: false
+  AdditionalAttribute2:
+    type: string | nil
+    required: false
+  AdditionalAttribute3:
+    type: string | nil
+    required: false
+  AdditionalAttribute4:
+    type: string | nil
+    required: false
+  AdditionalAttribute5:
+    type: string | nil
+    required: false
+  AdditionalAttribute6:
+    type: string | nil
+    required: false
+  AdditionalAttribute7:
+    type: string | nil
+    required: false
+  AdditionalAttribute8:
+    type: string | nil
+    required: false
+  AdditionalAttribute9:
+    type: string | nil
+    required: false
+  AdditionalAttribute10:
+    type: string | nil
+    required: false
+  AttributeSet:
+    type: string | nil
+    required: false
+  Tags:
+    type: string | nil
+    required: false
+  Status:
+    type: string
+    required: false
+  CreditLimit:
+    type: number
+    required: false
+  IsOnCreditHold:
+    type: boolean
+    required: false
+  LastModifiedOn:
+    type: string
+    required: false
+  Addresses:
+    type: array
+    required: false
+    items: 
+      type: object
+      properties:
+        Line1:
+          type: string
+          required: false
+        Line2:
+          type: string
+          required: false
+        City:
+          type: string
+          required: false
+        State:
+          type: string
+          required: false
+        Postcode:
+          type: string
+          required: false
+        Country:
+          type: string
+          required: false
+        Type:
+          type: string
+          required: false
+        DefaultForType:
+          type: boolean
+          required: false
+        ID:
+          type: string
+          required: false
+  
+  Contacts:
+    type: array
+    items: 
+      type: object
+      properties:
+        Name:
+          type: string
+          required: false
+        JobTitle:
+          type: string | nil
+          required: false
+        Phone:
+          type: string | nil
+          required: false
+        MobilePhone:
+          type: string | nil
+          required: false
+        Fax:
+          type: string | nil
+          required: false
+        Email:
+          type: string | nil
+          required: false
+        Website:
+          type: string | nil
+          required: false
+        Default:
+          type: boolean
+          required: false
+        Comment:
+          type: string | nil
+          required: false
+        IncludeInEmail:
+          type: boolean
+          required: false
+        MarketingConsent:
+          type: number
+          required: false
+        ID:
+          type: string
+          required: false

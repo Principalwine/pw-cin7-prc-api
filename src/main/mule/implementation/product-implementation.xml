@@ -8,6 +8,37 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	<sub-flow name="product-implementation-subFlow" doc:id="a3c30f3c-d6ad-46fa-9482-af5d4abfc64d" >
 		<try doc:name="Try" doc:id="34dda8a5-0cda-4b7a-8287-0df90d5c9291" >
 			<set-variable value="#[payload]" doc:name="Request Payload" doc:id="14ee471a-cce2-4b04-9ce8-ed9a0f2fb67a" variableName="requestPayload" />
+			<ee:transform doc:name="Location Payload" doc:id="86699a7f-82e1-4e0f-8df6-d3b80dd7550a" >
+				<ee:message >
+					<ee:set-payload resource="dwls/msg-product-location-req.dwl" />
+				</ee:message>
+				<ee:variables >
+				</ee:variables>
+			</ee:transform>
+			<try doc:name="Try" doc:id="7863a81f-ae01-49a5-82ad-391f731a9653" >
+				<flow-ref doc:name="request-to-salesforce-upsert-subflow" doc:id="843eef23-db81-4b92-8509-9cc8cb0ea9e2" name="request-to-salesforce-upsert-subflow" />
+				<error-handler >
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="01b3db75-e0d4-478a-83b4-01537c3bf1be" >
+						<ee:transform doc:name="Error Payload" doc:id="e0022fc9-aae4-4b1c-8c0b-54b10c6f7a1e" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+//vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+{
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+}]]></ee:set-payload>
+							</ee:message>
+							<ee:variables >
+								<ee:set-variable variableName="entity" ><![CDATA["Location Sync"]]></ee:set-variable>
+								<ee:set-variable variableName="system" ><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+					</on-error-propagate>
+				</error-handler>
+			</try>
 			<ee:dynamic-evaluate doc:name="Set Payload" doc:id="5644013a-99b6-41ea-bb6b-40754c5c25ad" expression="#[readUrl(&quot;classpath://dwls/&quot; ++ (vars.requestPayload.dwl as String) ++ &quot;.dwl&quot;, 'text/plain')]" />
 			<logger level="DEBUG" doc:name="Log Outbound" doc:id="afc75751-3d3d-410d-9c66-795e7cb73500" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to cin system api started",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
 			<try doc:name="Try" doc:id="c73c2ce6-4f87-4d26-898b-f5c31c8033aa">
@@ -30,10 +61,39 @@ output application/json
 							<ee:set-variable variableName="system"><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
 						</ee:variables>
 					</ee:transform>
-						<flow-ref doc:name="Send Error Email" doc:id="ae8b2aa1-0f39-4918-aac4-ade1ad6b9bb9" name="send-email-subflow"/>
 				</on-error-propagate>
 			</error-handler>
 		</try>
+			<ee:transform doc:name="PriceBook Entry Payload" doc:id="e5494ed2-4526-4fb7-b770-f67b3fd57e8a">
+				<ee:message>
+					<ee:set-payload resource="msg-sf-price-book-entry-req.dwl" />
+				</ee:message>
+				<ee:variables>
+				</ee:variables>
+			</ee:transform>
+			<try doc:name="Try" doc:id="3ff8f143-b03c-47f9-8b72-ab2e2412f73e" >
+				<flow-ref doc:name="request-to-salesforce-upsert-subflow" doc:id="f1385738-e29a-4be7-a0e0-71356576a76d" name="request-to-salesforce-upsert-subflow" />
+				<error-handler >
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a198adcb-6b7c-4a87-b485-81a66001196d" >
+						<ee:transform doc:name="Error Transformation" doc:id="91cdd253-b0f5-45f9-839a-5edc1b58e4a4" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+}]]></ee:set-payload>
+							</ee:message>
+							<ee:variables >
+								<ee:set-variable variableName="entity" ><![CDATA["Product Sync"]]></ee:set-variable>
+								<ee:set-variable variableName="system" ><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+					</on-error-propagate>
+				</error-handler>
+			</try>
 			<logger level="DEBUG" doc:name="Log Inbound" doc:id="18cae8dc-e626-407b-bd78-38551cf9e946" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to cin system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
 			<error-handler >
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="438f7a7c-6b9c-448f-bdc4-d264c5802510" >
@@ -57,5 +117,8 @@ output application/json
 				</on-error-propagate>
 			</error-handler>
 		</try>
+	</sub-flow>
+	<sub-flow name="sale-order-implementation-subFlow" doc:id="40cf2e5b-d39c-4ba8-88eb-73302ea65a8d" >
+		<set-variable value="#[payload.requestBody.saleID]" doc:name="Set Variable" doc:id="7269e39e-a048-4f10-9806-041baf67d7da" variableName="saleId"/>
 	</sub-flow>
 </mule>

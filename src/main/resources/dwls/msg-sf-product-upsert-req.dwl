@@ -1,11 +1,11 @@
 %dw 2.0
 output application/json
-
+var defLocation = vars.requestPayload.requestBody.LocationList[0].ID
 ---
 {
 	"objectName": "Product2",
   	"externalField": "Cin7_Id__c",
-  	"data": payload.requestBody.ProductDetailsList map (product, index) -> {
+  	"data": vars.requestPayload.requestBody.ProductDetailsList map (product, index) -> {
 	    Cin7_Id__c: product.ID,
 	    
 	    StockKeepingUnit: product.SKU,
@@ -15,7 +15,12 @@ output application/json
 	    Type__c: product.Type,
 	    Costing_Method__c: product.CostingMethod,
 	    DropShipMode__c: product.DropShipMode,
-	    Default_Location__c: product.DefaultLocation,
+	    //Default_Location__c: product.DefaultLocation,
+	    
+	    Default_Location__r: {
+	        Cin7ID__c: defLocation
+	    },
+	    
 	    Length__c: product.Length,
 	    Width__c: product.Width,
 	    Height__c: product.Height,
@@ -84,5 +89,6 @@ output application/json
 	    HSCode__c: product.HSCode,
 	    Country__c: product.CountryOfOrigin,
 	    Country_Of_Origin_Code__c: product.CountryOfOriginCode,
+	    Warranty__c: product.WarrantyName
 	}
 }
