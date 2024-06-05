@@ -10,6 +10,7 @@ var operationName = "UPSERT" ++ "-" ++ "SALE-ORDER"
 		"host": Mule::p('cin7-sys-api.host') as String,
 		"url": Mule::p('operation.$(operationName).path') as String,
 		"queryParams": {
+			"Id": payload.SaleID
 		},
 		"uriParams": {
 		},

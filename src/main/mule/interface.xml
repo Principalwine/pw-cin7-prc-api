@@ -61,32 +61,14 @@ var operationName = "UPSERT" ++ "-" ++ "PRODUCT"
         <logger level="INFO" doc:name="Log Exit" doc:id="5b3f8bde-6b74-40ed-935b-911672f14704" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;EXIT&quot;,&#xA;  MetaData: &quot;Ended upsert in product object in salesforce&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
     </flow>
     <flow name="post:\salesOrders:application\json:cin7-prc-api-config">
-        <logger level="INFO" doc:name="Log Start" doc:id="28dcc050-c54c-4b38-8812-c68a407c3310" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;ENTRY&quot;,&#xA;  MetaData: &quot;Started upsert in product object in salesforce&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
-        <!-- [STUDIO:"Create Request"]<ee:transform doc:name="Create Request" doc:id="66c87c62-8b71-468c-b874-82107c8361aa">
+        <logger level="INFO" doc:name="Log Start" doc:id="28dcc050-c54c-4b38-8812-c68a407c3310" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ENTRY",&#10;  MetaData: "Started Sales Order in process api",&#10;  correlationId: correlationId&#10;}]' />
+        <ee:transform doc:name="Create Request" doc:id="66c87c62-8b71-468c-b874-82107c8361aa">
             <ee:message>
 				<ee:set-payload resource="dwls/msg-req-parameter-sale-order.dwl" />
             </ee:message>
-        </ee:transform> [STUDIO] -->
-        <!-- [STUDIO:"sf-cin7-implementation-subFlow"]<flow-ref doc:name="sf-cin7-implementation-subFlow" doc:id="9dcbcdf5-d940-414d-a97b-493d68032db2" name="sf-cin7-implementation-subFlow"/> [STUDIO] -->
-        <ee:transform doc:name="Transform Message" doc:id="35dfa35c-3b2e-48f2-857d-12ffdc0415a9">
-            <ee:message>
-                <ee:set-payload resource="dwls/msg-order-create-req.dwl" />
-            </ee:message>
         </ee:transform>
-        <ee:transform doc:name="Transform Message" doc:id="df2e356a-ca37-4bdf-8235-9a80af79f26a">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-	"objectName": "Order",
-  	"externalField": "Cin7_Id__c",
-  	"data": [payload]
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-        <flow-ref doc:name="request-to-salesforce-upsert-subflow" doc:id="3327aa74-f77a-48e1-8e50-9565104e53e9" name="request-to-salesforce-upsert-subflow" />
-        <logger level="INFO" doc:name="Log Exit" doc:id="ae22d3f5-1fa5-4d81-8970-6674e0a3bd0b" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;EXIT&quot;,&#xA;  MetaData: &quot;Ended upsert in product object in salesforce&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
+        <flow-ref doc:name="Create Sale-Order Subflow" doc:id="b0986b01-e822-4f75-96da-f72bfe0061d0" name="create-sale-order-subflow" />
+		<logger level="INFO" doc:name="Log Exit" doc:id="ae22d3f5-1fa5-4d81-8970-6674e0a3bd0b" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended upsert in Sales Order object in salesforce",&#10;  correlationId: correlationId&#10;}]' />
     </flow>
     <flow name="post:\stocks:application\json:cin7-prc-api-config">
         <ee:transform doc:name="Transform Message">
