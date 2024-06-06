@@ -75,6 +75,7 @@ operation:
     
   CREATE-ORDER:
     dwl: "msg-cin7-order-create-req"
+    sfDwl: "msg-sf-order-create-sync-req"
     path: ""
     
 cin7-sys-api:
