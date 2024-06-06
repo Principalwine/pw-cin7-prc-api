@@ -35,7 +35,7 @@ vars.requestPayload.httpRequest.headers]]]></http:headers>
 						</otherwise>
 					</choice>
 						<choice doc:name="Choice" doc:id="34866d16-7848-412d-be46-2659d649a1c8">
-							<when expression='#[(vars.requestPayload.operation == "UPSERT-SALE-ORDER" or vars.requestPayload.operation == "GET-LOCATION") and vars.requestPayload.httpRequest.method == "GET"]'>
+							<when expression='#[(vars.requestPayload.operation == "UPSERT-SALE-ORDER" or vars.requestPayload.operation == "GET-LOCATION" or vars.requestPayload.operation == "GET-ACCOUNT") and vars.requestPayload.httpRequest.method == "GET"]'>
 								<logger level="INFO" doc:name="Logger" doc:id="08379bda-40d5-4dfd-b0d4-3c9f1255e1cd" message='#["Sales Order Details from Cin7 Fetched Successfully"]' />
 							</when>
 							<otherwise>
@@ -160,48 +160,57 @@ output application/json
 }]]></ee:set-payload>
 							</ee:message>
 							<ee:variables>
-								<ee:set-variable variableName="entity"><![CDATA["Product Sync"]]></ee:set-variable>
+								<ee:set-variable variableName="entity"><![CDATA["Sales Order Sync"]]></ee:set-variable>
 								<ee:set-variable variableName="system"><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
 							</ee:variables>
 						</ee:transform>
 					</on-error-propagate>
 				</error-handler>
 		</try>
-			<set-variable value="#[vars.salesOrderDetails.data.SalesRepresentative]" doc:name="Sales Representative" doc:id="4bfd4f22-04dd-49d1-81a1-d69542e333df" variableName="salesRepresentative"/>
-			<flow-ref doc:name="Fetch Sales Representative" doc:id="b2647191-a3f4-453b-9ac1-86d5e2014f39" name="check-sales-representative-subflow"/>
-			<ee:transform doc:name="Transform Message" doc:id="374ae7a3-1c43-4c5f-b537-2843f1b1bc44">
+			<try doc:name="Try" doc:id="b7e0f86b-f9ba-4ea7-9be8-84e37ba57ad1" >
+				<scatter-gather doc:name="Scatter-Gather" doc:id="833fe719-b6b6-4f67-9a93-4dcbd2acc649">
+				<route>
+					<set-variable value="#[vars.salesOrderDetails.data.SalesRepresentative]" doc:name="Sales Representative" doc:id="4bfd4f22-04dd-49d1-81a1-d69542e333df" variableName="salesRepresentative" />
+					<flow-ref doc:name="Fetch Sales Representative" doc:id="b2647191-a3f4-453b-9ac1-86d5e2014f39" name="check-sales-representative-subflow" />
+				</route>
+				<route>
+					<ee:transform doc:name="Create Location Request" doc:id="374ae7a3-1c43-4c5f-b537-2843f1b1bc44">
 							<ee:message>
-								<ee:set-payload><![CDATA[%dw 2.0
-output application/json
-var operationName = "GET" ++ "-" ++ "LOCATION"
----
-{
-	"type": "httpRequest",
-	"httpRequest": {
-		"protocol": Mule::p('cin7-sys-api.protocol') as String,
-		"method": "GET",
-		"host": Mule::p('cin7-sys-api.host') as String,
-		"url": Mule::p('operation.$(operationName).path') as String,
-		"queryParams": {
-			"Name": vars.salesOrderDetails.data.Location
-		},
-		"uriParams": {
-		},
-		"headers": {
-			"x-correlation-id": correlationId,
-
-  			"client_id": Mule::p('secure::cin7-sys-api.client_id'),
-  			"client_secret": Mule::p('secure::cin7-sys-api.client_secret')
-		},
-	},
-	"operation": operationName,
-	"dwl": Mule::p("operation.$(operationName).dwl") as String,
-	"requestBody": payload
-}
-]]></ee:set-payload>
+							<ee:set-payload resource="dwls/msg-req-parameter-cin7-location-get.dwl" />
 							</ee:message>
 						</ee:transform>
-			<flow-ref doc:name="Fetch Location Details From Cin7" doc:id="4b39dbf3-f133-4583-863b-450f9569645b" name="sf-cin7-implementation-subFlow" target="locationDetails" />
+					<flow-ref doc:name="Fetch Location Details From Cin7" doc:id="4b39dbf3-f133-4583-863b-450f9569645b" name="sf-cin7-implementation-subFlow" target="locationDetails" />
+				</route>
+				<route>
+					<ee:transform doc:name="Create Account Request" doc:id="18cc31bd-f58d-4d18-b9f5-45c852793f4e">
+						<ee:message>
+							<ee:set-payload resource="dwls/msg-req-parameter-cin7-customer-get.dwl" />
+						</ee:message>
+					</ee:transform>
+					<flow-ref doc:name="Fetch Account Details From Cin7" doc:id="87b97029-76de-4c6e-9245-7d9810a1af3e" name="sf-cin7-implementation-subFlow" target="accountDetails" />
+				</route>
+			</scatter-gather>
+				<error-handler >
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7bd66638-9627-4221-9145-ec57869d0671" >
+						<ee:transform doc:name="Error Transformation" doc:id="049b69c1-29eb-41eb-a282-cd085eb0c956" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+}]]></ee:set-payload>
+							</ee:message>
+							<ee:variables >
+								<ee:set-variable variableName="entity" ><![CDATA["Sales Order Sync"]]></ee:set-variable>
+								<ee:set-variable variableName="system" ><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+					</on-error-propagate>
+				</error-handler>
+			</try>
 			<ee:transform doc:name="Order Transform Request" doc:id="35dfa35c-3b2e-48f2-857d-12ffdc0415a9">
             <ee:message>
                 <ee:set-payload resource="dwls/msg-order-create-req.dwl" />
@@ -235,101 +244,48 @@ output application/json
 }]]></ee:set-payload>
 							</ee:message>
 							<ee:variables>
-								<ee:set-variable variableName="entity"><![CDATA["Product Sync"]]></ee:set-variable>
+								<ee:set-variable variableName="entity"><![CDATA["Sales Order Sync"]]></ee:set-variable>
 								<ee:set-variable variableName="system"><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
 							</ee:variables>
 						</ee:transform>
 					</on-error-propagate>
 				</error-handler>
 			</try>
-			<ee:transform doc:name="Transform Message" doc:id="5c9e4edc-be11-4515-baab-3f3196af2dda" >
-				<ee:message >
-					<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-var priceBookNameAndId = [
-  {
-    "Id": "01s2w00000MsKTIAA3",
-    "Name": "Standard Price Book",
-    "cin7Label": "PriceTier0"
-  },
-  {
-    "Id": "01s0T000000Be26QAC",
-    "Name": "Wholesale",
-    "cin7Label" : "PriceTier1"
-  },
-  {
-    "Id": "01s0T000000Be4NQAS",
-    "Name": "Buy",
-    "cin7Label" : "PriceTier2"
-  },
-  {
-    "Id": "01s0T000000Be4SQAS",
-    "Name": "Buy - Euro",
-    "cin7Label" : "PriceTier3"
-  },
-  {
-    "Id": "01s0T000000Be4XQAS",
-    "Name": "Buy - Pound",
-    "cin7Label" : "PriceTier4"
-  },
-  {
-    "Id": "01s0T000000Be4TQAS",
-    "Name": "Wholesale - WA",
-    "cin7Label" : "PriceTier5"
-  },
-  {
-    "Id": "01s0T000000Be4YQAS",
-    "Name": "Buy - NZD",
-    "cin7Label" : "PriceTier6"
-  },
-  {
-    "Id": "01s0T000000Be4hQAC",
-    "Name": "Not Used (7)",
-    "cin7Label" : "PriceTier7"
-  },
-  {
-    "Id": "01s0T000000Be4mQAC",
-    "Name": "Not Used (8)",
-    "cin7Label" : "PriceTier8"
-  },  
-  {
-    "Id": "01s0T000000Be4rQAC",
-    "Name": "Not Used (9)",
-    "cin7Label" : "PriceTier9"
-  },
-  {
-    "Id": "01s0T000000Be4cQAC",
-    "Name": "Baseline Cost",
-    "cin7Label" : "PriceTier10"
-  } 
-]
----
-{
-	"objectName": "OrderItem",
-  	"externalField": "Cin7ID__c",
-  	"data":
-	vars.salesOrderDetails.data.Order.Lines map (item, index) -> {
-	    Cin7ID__c: vars.salesOrderDetails.data.ID ++  "-" ++  item.ProductID,
-	    Product2:{
-	        Cin7_Id__c: item.ProductID
-	    },
-	    Order:{
-	        Cin7_ID__c: vars.salesOrderDetails.data.ID
-	    },
-	    PricebookEntry:{
-	    	Cin7ID__c: item.ProductID ++ "-" ++ (priceBookNameAndId filter ((item, index) -> item.Name == vars.SalesOrderDetails.data.PriceTier))[0].cin7Label
-	    },
-	    UnitPrice: item.Price,
-	    Quantity: item.Quantity,
-	    Stock__r: {
-	    	Cin7_StockID__c: item.ProductID ++ "-" ++ vars.locationDetails.data.LocationList[0].ID
-	    },
-	    //TotalPrice: item.Total
-	}
-}]]></ee:set-payload>
+			<choice doc:name="Choice" doc:id="8351d00d-752d-48f5-9b87-5d3d7c7f3c43" >
+				<when expression="#[!isEmpty(vars.salesOrderDetails.data.Order.Lines)]">
+					<ee:transform doc:name="Create Order Product SF Request" doc:id="5c9e4edc-be11-4515-baab-3f3196af2dda">
+				<ee:message>
+					<ee:set-payload resource="dwls/msg-sf-order-product-upsert-req.dwl" />
 				</ee:message>
 			</ee:transform>
-			<flow-ref doc:name="Update Order Product" doc:id="233bff0f-b03d-419f-a18c-95ae42708f03" name="request-to-salesforce-upsert-subflow"/>
+					<try doc:name="Try" doc:id="0b06ae9e-3835-4145-b06e-6e1773c700fa">
+				<flow-ref doc:name="Update Order Product" doc:id="233bff0f-b03d-419f-a18c-95ae42708f03" name="request-to-salesforce-upsert-subflow" />
+				<error-handler>
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="47a8531d-f577-4251-81cf-63a0bcfbef59">
+						<ee:transform doc:name="Error Transformation" doc:id="54c58d4a-ff17-4a1a-a5ea-21f98f1d7e93">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+}]]></ee:set-payload>
+							</ee:message>
+							<ee:variables>
+								<ee:set-variable variableName="entity"><![CDATA["Sales Order Sync"]]></ee:set-variable>
+								<ee:set-variable variableName="system"><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+					</on-error-propagate>
+				</error-handler>
+			</try>
+				</when>
+				<otherwise >
+					<logger level="INFO" doc:name="No Order Line Items to Process" doc:id="e521579a-30b4-48e6-a9fa-cd981e702a0b" message="No Order Line Items to Process"/>
+				</otherwise>
+			</choice>
 			<error-handler>
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b48d9b3e-957e-477a-8730-9b40fe3cdc34">
 					<ee:transform doc:name="Error Transformation" doc:id="e5f87ef9-30f6-4696-9d45-516c5e390b0b">
@@ -344,7 +300,7 @@ output application/json
 }]]></ee:set-payload>
 						</ee:message>
 						<ee:variables>
-							<ee:set-variable variableName="entity"><![CDATA["Product Sync"]]></ee:set-variable>
+							<ee:set-variable variableName="entity"><![CDATA["Sales Order Sync"]]></ee:set-variable>
 							<ee:set-variable variableName="system"><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
 						</ee:variables>
 					</ee:transform>

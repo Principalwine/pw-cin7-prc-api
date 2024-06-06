@@ -8,7 +8,24 @@ var order = vars.salesOrderDetails.data default {}
 	Account: {
 		Cin7ID__c: order.CustomerID
 	},
-	//ContactId__c: order.Contact,
+	ContactId__r: {
+		Cin7ID__c: (vars.accountDetails.data.CustomerList[0].Contacts filter ((item, index) 
+					-> item.Name ==  order.Contact))[0].ID default null
+	},
+	
+	(BillingCity: order.BillingAddress.City) if (!isEmpty(order.BillingAddress.City)),
+	(BillingCountry: order.BillingAddress.Country) if (!isEmpty(order.BillingAddress.City)),
+	(BillingState: order.BillingAddress.State) if (!isEmpty(order.BillingAddress.City)),
+	BillingStreet: order.BillingAddress.Line1 default "" ++ order.BillingAddress.Line2 default "",
+	(BillingPostalCode: order.BillingAddress.Postcode) if (!isEmpty(order.BillingAddress.City)),
+	
+	(ShippingCity: order.ShippingAddress.City) if (!isEmpty(order.ShippingAddress.City)),
+	(ShippingCountry: order.ShippingAddress.Country) if (!isEmpty(order.ShippingAddress.City)),
+	(ShippingState: order.ShippingAddress.State) if (!isEmpty(order.ShippingAddress.City)),
+	ShippingStreet: order.ShippingAddress.Line1 default "" ++ order.ShippingAddress.Line2 default "",
+	(ShippingPostalCode: order.ShippingAddress.Postcode) if (!isEmpty(order.ShippingAddress.City)),
+	
+	
 	Phone__c: order.Phone,
 	Email__c: order.Email,
 	Default_Account__c: order.DefaultAccount,
