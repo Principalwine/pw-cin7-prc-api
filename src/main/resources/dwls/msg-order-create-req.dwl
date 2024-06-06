@@ -1,6 +1,6 @@
 %dw 2.0
 output application/json
-var order = payload.data default {}
+var order = vars.salesOrderDetails.data default {}
 ---
 {
 	Cin7_ID__c: order.ID,
@@ -20,17 +20,23 @@ var order = payload.data default {}
 	Tax_Calculation__c: order.TaxCalculation,
 	Terms__c: order.Terms,
 	PriceTier__c: order.PriceTier,
+	Location__r: {
+		Cin7ID__c: vars.locationDetails.data.LocationList[0].ID default null
+	},
+	
+	//Sale_Order_Date__c: order.SaleOrderDate, This is Effective Date
+	EffectiveDate: order.SaleOrderDate,
 	ShipBy__c: order.ShipBy,
-	//Location__c: order.Location,
-	//Sale_Order_Date__c: order.SaleOrderDate,
+	//EndDate: "2024-06-07T00:00:00", This is shipBy
+	
 	LastModifiedOn__c: order.LastModifiedOn,
 	Note__c: order.Note,
 	Customer_Reference__c: order.CustomerReference,
 	COGS_Amount__c: order.COGSAmount,
 	
 	Status: "Draft", //This is mandatory
-	EffectiveDate: order.SaleOrderDate,
-	//EndDate: "2024-06-07T00:00:00",
+	
+	
 	Combined_Picking_Status__c: order.CombinedPickingStatus,
 	Combined_Packing_Status__c: order.CombinedPackingStatus,
 	Combined_Shipping_Status__c: order.CombinedShippingStatus,
@@ -40,12 +46,11 @@ var order = payload.data default {}
 	Combined_Tracking_Numbers__c: order.CombinedTrackingNumbers,
 	Carrier__c: order.Carrier,
 	Currency_Rate__c: order.CurrencyRate,
-	//Sales_Representative__c: order.SalesRepresentative,
-
+	Sales_Representative__c: if(sizeOf(vars.query)== 1)vars.query[0].Id else vars.query[0].Id,
 	Type__c: order.Type,
 	Source_Channel__c: order.SourceChannel,
 	ExternalID__c: order.ExternalID,
 	Service_Only__c: order.ServiceOnly,
-	//Tax_Iclusive__c: order.TaxIclusive,
+	Tax_Iclusive__c: if(order.TaxCalculation == "Inclusive") true else false,
 	Comments__c: order.Comments
 }
