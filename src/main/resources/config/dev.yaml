@@ -72,12 +72,12 @@ operation:
   CREATE-SALE:
     dwl: "msg-cin7-sale-create-req"
     sfDwl: "msg-sf-sale-create-req"
-    path: ""
+    path: "/api/sales"
     
   CREATE-ORDER:
     dwl: "msg-cin7-order-create-req"
     sfDwl: "msg-sf-order-create-sync-req"
-    path: ""
+    path: "/api/order"
     
   GET-ACCOUNT:
     dwl: "msg-null-get-req"

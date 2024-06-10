@@ -1,11 +1,18 @@
 %dw 2.0
 output application/json
+var request = vars.requestPayload.requestBody.data.payload
 ---
 {
 	"objectName": "Order",
-  	"externalField": "Cin7_ID__c",
+  	"externalField": "Id",
   	"data": [ {
+		"Id": request.ChangeEventHeader.recordIds[0] default request.Id,
 	    Cin7_Id__c: payload.data.ID,
-	    LastModifiedOn__c: payload.data.LastModifiedOn
+	    LastModifiedOn__c: payload.data.LastModifiedOn,
+	    "Account": {
+		"Cin7ID__c": payload.data.CustomerID
+},
+"EffectiveDate": payload.data.SaleOrderDate,
+"Status": payload.data.Status
 	 }]
 }

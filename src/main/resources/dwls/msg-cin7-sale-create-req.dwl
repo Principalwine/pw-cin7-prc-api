@@ -1,11 +1,11 @@
 %dw 2.0
 output application/json
-var item = payload.data.payload
+var item = vars.requestPayload.requestBody.data.payload
 ---
 {
-    Customer: "",
+    //Customer: "",
     CustomerID: item.Cin7_AccountID__c,
-    Contact: item.ContactId__c,
+    //Contact: item.ContactId__c,
     Phone: item.Phone__c,
     Email: item.Email__c,
     DefaultAccount: item.Default_Account__c,
