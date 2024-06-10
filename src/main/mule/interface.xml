@@ -61,14 +61,14 @@ var operationName = "UPSERT" ++ "-" ++ "PRODUCT"
         <logger level="INFO" doc:name="Log Exit" doc:id="5b3f8bde-6b74-40ed-935b-911672f14704" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;EXIT&quot;,&#xA;  MetaData: &quot;Ended upsert in product object in salesforce&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
     </flow>
     <flow name="post:\salesOrders:application\json:cin7-prc-api-config">
-        <logger level="INFO" doc:name="Log Start" doc:id="28dcc050-c54c-4b38-8812-c68a407c3310" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ENTRY",&#10;  MetaData: "Started Sales Order in process api",&#10;  correlationId: correlationId&#10;}]' />
+        <logger level="INFO" doc:name="Log Start" doc:id="28dcc050-c54c-4b38-8812-c68a407c3310" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;ENTRY&quot;,&#xA;  MetaData: &quot;Started Sales Order in process api&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
         <ee:transform doc:name="Create Request" doc:id="66c87c62-8b71-468c-b874-82107c8361aa">
             <ee:message>
-				<ee:set-payload resource="dwls/msg-req-parameter-sale-order.dwl" />
+                <ee:set-payload resource="dwls/msg-req-parameter-sale-order.dwl" />
             </ee:message>
         </ee:transform>
         <flow-ref doc:name="Create Sale-Order Subflow" doc:id="b0986b01-e822-4f75-96da-f72bfe0061d0" name="create-sale-order-subflow" />
-		<logger level="INFO" doc:name="Log Exit" doc:id="ae22d3f5-1fa5-4d81-8970-6674e0a3bd0b" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended upsert in Sales Order object in salesforce",&#10;  correlationId: correlationId&#10;}]' />
+        <logger level="INFO" doc:name="Log Exit" doc:id="ae22d3f5-1fa5-4d81-8970-6674e0a3bd0b" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;EXIT&quot;,&#xA;  MetaData: &quot;Ended upsert in Sales Order object in salesforce&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
     </flow>
     <flow name="post:\stocks:application\json:cin7-prc-api-config">
         <ee:transform doc:name="Transform Message">
@@ -112,12 +112,12 @@ output application/json
         <http:listener doc:name="Listener" doc:id="8caa3049-f327-4885-8cbb-7138d2cc492a" config-ref="HTTP_Listener_config" path="/test" />
         <flow-ref doc:name="Flow Reference" doc:id="ec0e6758-ba99-4975-afe1-f76fff733d11" name="account-contact-address-change-event-flow" />
     </flow>
-	<flow name="sales-change-event-flow" doc:id="6c962672-c62b-43b8-96f4-0665a6a99584" >
-		<salesforce:subscribe-channel-listener doc:name="Sales Change Event Listener" doc:id="3785acb9-2602-4a97-a4c1-6a666c5f7417" config-ref="Salesforce_Config" streamingChannel="${salesforce.sale-event}"/>
-		<logger level="INFO" doc:name="Request Logger" doc:id="008bd08d-7957-448c-be11-c1b1226eb1d4" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Request Logger",&#10;  MetaData: "Request received in cin7-prc-api Sale event",&#10;  correlationId: correlationId,&#10;  payload: payload&#10;}]' />
-		<ee:transform doc:name="Create Request" doc:id="197a720e-3f3a-4f20-a96c-fcb65631fda5" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+    <flow name="sales-change-event-flow" doc:id="6c962672-c62b-43b8-96f4-0665a6a99584">
+        <salesforce:subscribe-channel-listener doc:name="Sales Change Event Listener" doc:id="3785acb9-2602-4a97-a4c1-6a666c5f7417" config-ref="Salesforce_Config" streamingChannel="${salesforce.sale-event}" />
+        <logger level="INFO" doc:name="Request Logger" doc:id="008bd08d-7957-448c-be11-c1b1226eb1d4" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;Request Logger&quot;,&#xA;  MetaData: &quot;Request received in cin7-prc-api Sale event&quot;,&#xA;  correlationId: correlationId,&#xA;  payload: payload&#xA;}]" />
+        <ee:transform doc:name="Create Request" doc:id="197a720e-3f3a-4f20-a96c-fcb65631fda5">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 var operationName = "CREATE" ++ "-" ++ "SALE"
 ---
@@ -145,20 +145,19 @@ var operationName = "CREATE" ++ "-" ++ "SALE"
 	"responseDwl": Mule::p("operation.$(operationName).sfDwl") as String,
 	//"errDwl": Mule::p("operation.$(operationName).errDwl") as String,
 	"requestBody": payload
-}
-]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="Log Start" doc:id="f58a091a-be22-411b-bc68-1fe4dca7c143" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ENTRY",&#10;  MetaData: "Cin7-process-api Sale event started",&#10;  correlationId: correlationId&#10;}]' />
-		<flow-ref doc:name="sf-cin7-implementationSub_Flow" doc:id="b8bce0bd-c14b-4f34-bc24-38beaa65bea3" name="sf-cin7-implementation-subFlow" />
-		<logger level="INFO" doc:name="Log Exit" doc:id="234274ce-044f-4f50-a642-243d966f1651" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended upsert in Cin7 and also synced the response back to Salesforce",&#10;  correlationId: correlationId&#10;}]' />
-	</flow>
-	<flow name="order-change-event-flow" doc:id="61d7fa9b-c241-4153-acfd-026c846df42b" >
-		<salesforce:subscribe-channel-listener streamingChannel="${salesforce.order-event}" doc:name="Sales Change Event Listener" doc:id="9d689587-3af6-4122-9baa-5a123d926f19" config-ref="Salesforce_Config" />
-		<logger level="INFO" doc:name="Request Logger" doc:id="fdecbddb-85e0-4b67-9771-5c269a791473" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Request Logger",&#10;  MetaData: "Request received in cin7-prc-api Sale event",&#10;  correlationId: correlationId,&#10;  payload: payload&#10;}]' />
-		<ee:transform doc:name="Create Request" doc:id="c09e4559-ebca-41f0-9bb0-bff22f21d089" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <logger level="INFO" doc:name="Log Start" doc:id="f58a091a-be22-411b-bc68-1fe4dca7c143" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;ENTRY&quot;,&#xA;  MetaData: &quot;Cin7-process-api Sale event started&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
+        <flow-ref doc:name="sf-cin7-implementationSub_Flow" doc:id="b8bce0bd-c14b-4f34-bc24-38beaa65bea3" name="sf-cin7-implementation-subFlow" />
+        <logger level="INFO" doc:name="Log Exit" doc:id="234274ce-044f-4f50-a642-243d966f1651" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;EXIT&quot;,&#xA;  MetaData: &quot;Ended upsert in Cin7 and also synced the response back to Salesforce&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
+    </flow>
+    <flow name="order-change-event-flow" doc:id="61d7fa9b-c241-4153-acfd-026c846df42b">
+        <salesforce:subscribe-channel-listener streamingChannel="${salesforce.order-event}" doc:name="Sales Change Event Listener" doc:id="9d689587-3af6-4122-9baa-5a123d926f19" config-ref="Salesforce_Config" />
+        <logger level="INFO" doc:name="Request Logger" doc:id="fdecbddb-85e0-4b67-9771-5c269a791473" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;Request Logger&quot;,&#xA;  MetaData: &quot;Request received in cin7-prc-api Sale event&quot;,&#xA;  correlationId: correlationId,&#xA;  payload: payload&#xA;}]" />
+        <ee:transform doc:name="Create Request" doc:id="c09e4559-ebca-41f0-9bb0-bff22f21d089">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 var operationName = "CREATE" ++ "-" ++ "ORDER"
 ---
@@ -186,12 +185,11 @@ var operationName = "CREATE" ++ "-" ++ "ORDER"
 	"responseDwl": Mule::p("operation.$(operationName).sfDwl") as String,
 	//"errDwl": Mule::p("operation.$(operationName).errDwl") as String,
 	"requestBody": payload
-}
-]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="Log Start" doc:id="a0132c9a-3fe8-43d9-94cc-7d3dd7e744cb" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ENTRY",&#10;  MetaData: "Cin7-process-api Sale event started",&#10;  correlationId: correlationId&#10;}]' />
-		<flow-ref doc:name="sf-cin7-implementationSub_Flow" doc:id="3e94fd54-43f9-4f87-8f59-5ef1e1564e74" name="sf-cin7-implementation-subFlow" />
-		<logger level="INFO" doc:name="Log Exit" doc:id="301cffc7-6080-41c3-bf89-11fa0a56ff64" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended upsert in Cin7 and also synced the response back to Salesforce",&#10;  correlationId: correlationId&#10;}]' />
-	</flow>
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <logger level="INFO" doc:name="Log Start" doc:id="a0132c9a-3fe8-43d9-94cc-7d3dd7e744cb" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;ENTRY&quot;,&#xA;  MetaData: &quot;Cin7-process-api Sale event started&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
+        <flow-ref doc:name="sf-cin7-implementationSub_Flow" doc:id="3e94fd54-43f9-4f87-8f59-5ef1e1564e74" name="sf-cin7-implementation-subFlow" />
+        <logger level="INFO" doc:name="Log Exit" doc:id="301cffc7-6080-41c3-bf89-11fa0a56ff64" message="#[%dw 2.0&#xA;output application/json&#xA;---&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;EXIT&quot;,&#xA;  MetaData: &quot;Ended upsert in Cin7 and also synced the response back to Salesforce&quot;,&#xA;  correlationId: correlationId&#xA;}]" />
+    </flow>
 </mule>

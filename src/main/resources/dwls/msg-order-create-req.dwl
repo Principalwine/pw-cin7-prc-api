@@ -8,10 +8,11 @@ var order = vars.salesOrderDetails.data default {}
 	Account: {
 		Cin7ID__c: order.CustomerID
 	},
-	ContactId__r: {
-		Cin7ID__c: (vars.accountDetails.data.CustomerList[0].Contacts filter ((item, index) 
+	(ContactId__r: {
+		Cin7ID__c: (vars.accountDetails.data.CustomerList[0].Contacts default [] filter ((item, index) 
 					-> item.Name ==  order.Contact))[0].ID default null
-	},
+	}) if(!isEmpty(vars.accountDetails.data.CustomerList[0].Contacts default [] filter ((item, index) 
+					-> item.Name ==  order.Contact))),
 	
 	(BillingCity: order.BillingAddress.City) if (!isEmpty(order.BillingAddress.City)),
 	(BillingCountry: order.BillingAddress.Country) if (!isEmpty(order.BillingAddress.City)),
@@ -51,7 +52,7 @@ var order = vars.salesOrderDetails.data default {}
 	Customer_Reference__c: order.CustomerReference,
 	COGS_Amount__c: order.COGSAmount,
 	
-	Status: "Draft", //This is mandatory
+	Status: order.Status, //This is mandatory
 	
 	
 	Combined_Picking_Status__c: order.CombinedPickingStatus,
