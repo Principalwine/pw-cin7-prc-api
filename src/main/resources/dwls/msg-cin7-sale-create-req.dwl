@@ -20,7 +20,7 @@ var item = vars.requestPayload.requestBody.data.payload
         Postcode: item.BillingAddress.PostalCode,
         Country: item.BillingAddress.Country
     },
-    ShippingAddress: {
+    (ShippingAddress: {
         Id: "",
         DisplayAddressLine1: "",
         DisplayAddressLine2: "",
@@ -33,7 +33,7 @@ var item = vars.requestPayload.requestBody.data.payload
         Company: "",
         Contact: "",
         ShipToOther: false
-    },
+    }) if(!isEmpty(item.ShippingAddress.Street)),
     ShippingNotes: item.Shipping_Notes__c,
     BaseCurrency: item.Base_Currency__c,
     CustomerCurrency: item.Customer_Currency__c,

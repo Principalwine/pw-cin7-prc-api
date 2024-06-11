@@ -24,6 +24,6 @@ var operationName = "UPSERT" ++ "-" ++ "SALE-ORDER"
 	"operation": operationName,
 	"dwl": Mule::p("operation.$(operationName).dwl") as String,
 	//"responseDwl": Mule::p("operation.$(operationName).sfDwl") as String,
-	//"errDwl": Mule::p("operation.$(operationName).errDwl") as String,
+	"errDwl": Mule::p("operation.$(operationName).errDwl") as String,
 	"requestBody": payload
 }

@@ -44,7 +44,7 @@ var order = vars.salesOrderDetails.data default {}
 	
 	//Sale_Order_Date__c: order.SaleOrderDate, This is Effective Date
 	EffectiveDate: order.SaleOrderDate,
-	ShipBy__c: order.ShipBy,
+	(ShipBy__c: order.ShipBy) if(!isEmpty(order.ShipBy)),
 	//EndDate: "2024-06-07T00:00:00", This is shipBy
 	
 	LastModifiedOn__c: order.LastModifiedOn,
@@ -52,7 +52,7 @@ var order = vars.salesOrderDetails.data default {}
 	Customer_Reference__c: order.CustomerReference,
 	COGS_Amount__c: order.COGSAmount,
 	
-	Status: order.Status, //This is mandatory
+	(Status: order.Status) if(order.Status == "DRAFT" or order.Status == "ESTIMATING" or order.Status == "ESTIMATED" or order.Status == "ORDERING"), //This is mandatory
 	
 	
 	Combined_Picking_Status__c: order.CombinedPickingStatus,

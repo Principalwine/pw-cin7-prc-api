@@ -278,6 +278,7 @@ output application/json
 								<ee:set-variable variableName="system"><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
 							</ee:variables>
 						</ee:transform>
+								<flow-ref doc:name="Flow Reference" doc:id="b0ef8450-ff3e-4ec0-bd52-b47b3f8603f2" name="salesforce-error-update-subflow"/>
 					</on-error-propagate>
 				</error-handler>
 			</try>
@@ -286,6 +287,63 @@ output application/json
 					<logger level="INFO" doc:name="No Order Line Items to Process" doc:id="e521579a-30b4-48e6-a9fa-cd981e702a0b" message="No Order Line Items to Process"/>
 				</otherwise>
 			</choice>
+			<ee:transform doc:name="Update Order Status" doc:id="4b6ea12d-5e5f-40d0-b6e1-060a773087e8">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var order = vars.salesOrderDetails.data default {}
+---
+{
+	Cin7_ID__c: order.ID,
+	Cin7_AccountID__c: order.CustomerID,
+	Account: {
+		Cin7ID__c: order.CustomerID
+	},
+	
+	EffectiveDate: order.SaleOrderDate,
+	LastModifiedOn__c: order.LastModifiedOn,	
+	Status: order.Status, //This is mandatory
+
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			<ee:transform doc:name="Update Order Status SF Request" doc:id="b2768a38-4635-4cbf-b5bc-40be19269445">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"objectName": "Order",
+  	"externalField": "Cin7_Id__c",
+  	"data": [payload]
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<try doc:name="Try" doc:id="9868ca7c-58e7-4220-a67b-9ae2896ae4a9" >
+				<flow-ref doc:name="Update Order Status" doc:id="4cb07a6a-f24f-435b-a15f-243c45034414" name="request-to-salesforce-upsert-subflow" />
+				<error-handler >
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="86bd2944-b665-49a1-9a55-f92c7379994a" >
+						<ee:transform doc:name="Error Transformation" doc:id="02216ec2-bb6c-4ebb-91fc-722ceb9a7f65" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+}]]></ee:set-payload>
+							</ee:message>
+							<ee:variables >
+								<ee:set-variable variableName="entity" ><![CDATA["Sales Order Sync"]]></ee:set-variable>
+								<ee:set-variable variableName="system" ><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+						<flow-ref doc:name="Flow Reference" doc:id="14200dd0-998e-4c3d-a33a-e54d3f2b6683" name="salesforce-error-update-subflow"/>
+					</on-error-propagate>
+				</error-handler>
+			</try>
 			<error-handler>
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b48d9b3e-957e-477a-8730-9b40fe3cdc34">
 					<ee:transform doc:name="Error Transformation" doc:id="e5f87ef9-30f6-4696-9d45-516c5e390b0b">

@@ -64,6 +64,7 @@ operation:
   UPSERT-SALE-ORDER:
     dwl: "msg-null-get-req"
     path: "/api/sales"
+    errDwl: "err-sf-order-upsert-cin7-to-sf-sync-req"
     
   GET-LOCATION:
     dwl: "msg-null-get-req"
@@ -72,11 +73,13 @@ operation:
   CREATE-SALE:
     dwl: "msg-cin7-sale-create-req"
     sfDwl: "msg-sf-sale-create-req"
+    errDwl: "err-sf-sale-create-sf-to-cin7-req"
     path: "/api/sales"
     
   CREATE-ORDER:
     dwl: "msg-cin7-order-create-req"
     sfDwl: "msg-sf-order-create-sync-req"
+    errDwl: "err-sf-order-create-sf-to-cin7-req"
     path: "/api/order"
     
   GET-ACCOUNT:
