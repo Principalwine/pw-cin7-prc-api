@@ -1,10 +1,10 @@
 %dw 2.0
 output application/json
-var item = vars.requestPayload.requestBody.data.payload
+var item = vars.requestPayload.requestBody.payload
 ---
 {
     "SaleID": item.Cin7OrderId__c,
-    "Status": item.Status__c,
+    "Status": "DRAFT" default item.Status__c,
     "Lines": [
         {
                 "ProductID": item.Cin7_ProductId__c,

@@ -1,6 +1,6 @@
 %dw 2.0
 output application/json
-var request = vars.requestPayload.requestBody.data.payload
+var request = vars.requestPayload.requestBody.payload
 ---
 {
   "objectName": "OrderItem",

@@ -370,7 +370,7 @@ output application/json
 	<sub-flow name="get-account-contact-address-from-sf" doc:id="10dacfe4-bb4a-49ae-947f-1636d63b7876" >
 		<try doc:name="Try" doc:id="a7a1125a-f3a0-480a-98e9-40625347a720" >
 			<choice doc:name="Choice" doc:id="d3312f83-8810-4fac-9251-2ec714bbc3a5">
-			<when expression='#[payload.data.payload.ChangeEventHeader.changeType as String == "UPDATE" and (isEmpty(payload.data.payload.Cin7ID__c) or payload.data.payload.ChangeEventHeader.entityName == "Contact")]'>
+			<when expression='#[payload.data.payload.ChangeEventHeader.changeType as String == "UPDATE" and not (payload.data.payload.ChangeEventHeader.entityName as String == "Order" or payload.data.payload.ChangeEventHeader.entityName as String == "OrderItem") and (isEmpty(payload.data.payload.Cin7ID__c) or payload.data.payload.ChangeEventHeader.entityName == "Contact")]'>
 				<set-variable value='#[if(payload.data.payload.ChangeEventHeader.entityName == "Account")  "msg-sf-query-account" &#10;else if(payload.data.payload.ChangeEventHeader.entityName == "Contact") "msg-sf-query-contact"&#10;else "msg-sf-query-address"]' doc:name="queryEntity" doc:id="80a73fd6-fbe5-485e-a5af-c876b57579e6" variableName="queryEntity" />
 				<ee:dynamic-evaluate doc:name="Get SF Query Object" doc:id="f4a89bba-4674-4e11-9cce-2e768fa4d70a" expression="#[readUrl(&quot;classpath://dwls/&quot; ++ (vars.queryEntity as String) ++ &quot;.dwl&quot;, 'text/plain')]" target="query" />
 				<flow-ref doc:name="request-to-salesforce-query-subflow" doc:id="a596a3ff-48d5-4e7f-a38a-0899a7058ef5" name="request-to-salesforce-query-subflow" />

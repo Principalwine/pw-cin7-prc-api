@@ -1,6 +1,6 @@
 %dw 2.0
 output application/json
-var item = vars.requestPayload.requestBody.data.payload
+var item = vars.requestPayload.requestBody.payload
 ---
 {
     //Customer: "",
@@ -42,7 +42,7 @@ var item = vars.requestPayload.requestBody.data.payload
     Terms: item.Terms__c,
     PriceTier: item.PriceTier__c,
     ShipBy: item.ShipBy__c,
-    Location: item.Location__c,
+    //Location: item.Location__c,
     SaleOrderDate: item.Sale_Order_Date__c,
     LastModifiedOn: item.LastModifiedOn__c,
     Note: item.Note__c,
