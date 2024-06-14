@@ -42,7 +42,7 @@ var item = vars.requestPayload.requestBody.payload
     Terms: item.Terms__c,
     PriceTier: item.PriceTier__c,
     ShipBy: item.ShipBy__c,
-    //(Location: "14 Degrees") if(!isEmpty(item.Location_cin7_id__c)),
+    (Location: item.Location_cin7_id__c) if(!isEmpty(item.Location_cin7_id__c)),
     SaleOrderDate: item.Sale_Order_Date__c,
     LastModifiedOn: item.LastModifiedOn__c,
     Note: item.Note__c,

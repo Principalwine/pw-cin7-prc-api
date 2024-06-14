@@ -1,6 +1,6 @@
 %dw 2.0
 output application/json
-var order = vars.requestPayload.requestBody.payload
+var order = vars.salesOrderDetails.data
 
 ---
 {

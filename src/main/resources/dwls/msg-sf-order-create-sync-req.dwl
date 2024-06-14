@@ -9,7 +9,10 @@ var request = vars.requestPayload.requestBody.items
   "data": request map(obj, index) ->
     {
       "Id": obj.Id,
-      "Cin7ID__c": obj.Cin7OrderId__c ++ "-" ++ obj.Cin7_ProductId__c
+      "Cin7ID__c": obj.Cin7OrderId__c ++ "-" ++ obj.Cin7_ProductId__c,
+      Stock__r: {
+	    	Cin7_StockID__c: obj.Cin7_ProductId__c ++ "-" ++ obj.Product2.Default_Location__r.Cin7ID__c
+	  }
     }
   
 }
