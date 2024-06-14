@@ -1,0 +1,12 @@
+{
+  "Status__c": "Draft",
+  "Cin7OrderId__c": "abc-def-ghi-13-u",
+  "Items": [
+    {
+      "Id": "abc"
+    },
+    {
+      "Id": "def"
+    }
+  ]
+}

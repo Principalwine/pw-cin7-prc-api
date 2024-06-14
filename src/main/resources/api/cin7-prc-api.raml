@@ -6,7 +6,7 @@ mediaType:
 
 uses:
   commonLib: /exchange_modules/5171e7e0-1d56-46fe-8c83-c71abc945e2a/pw-cin7-common-library/1.0.0/pw-cin7-common-library.raml
-  datatypesLib: /exchange_modules/5171e7e0-1d56-46fe-8c83-c71abc945e2a/pw-cin7-common-datatypes/1.0.16/pw-cin7-common-datatypes.raml
+  datatypesLib: /exchange_modules/5171e7e0-1d56-46fe-8c83-c71abc945e2a/pw-cin7-common-datatypes/1.0.18/pw-cin7-common-datatypes.raml
 
 /customers:
   is: [commonLib.clientIdSecret, commonLib.trackable, commonLib.errorResponses]
@@ -72,3 +72,17 @@ uses:
     description: Sales Order Create Trigger Request
   put:
     description: Sales Order Update Trigger Request
+
+/orderItems:
+  is: [commonLib.clientIdSecret, commonLib.trackable, commonLib.errorResponses]
+  type:
+    commonLib.resources:
+      postReqDataType: 
+        type: datatypesLib.orderItemsRequest
+      postReqExample: !include examples/orderItemsRequest.json
+      postRespDataType: 
+        type: datatypesLib.cin7DummyResponse
+      postRespExample: !include examples/orderItemsResponse.json
+
+  post: 
+    description: Sales Order Create Trigger Request
