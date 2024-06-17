@@ -9,9 +9,10 @@ var orderItems = payload.requestBody.items
         {
                 "ProductID": item.Cin7_ProductId__c,
                 "Quantity": item.Quantity,
-                "Price": item.UnitPrice,             
+                "Price": item.UnitPrice,  
+                "Discount": item.Discount__c default 0,         
                 "TaxRule": item.Tax_Rule__c,
-                "Total": (item.Quantity * item.UnitPrice)as String{format: "#.00"} as Number
+                "Total": ((item.Quantity * item.UnitPrice) - (item.Quantity * item.UnitPrice)*((item.Discount__c default 0)/ 100))as String{format: "#.00"} as Number
         }            
     
 }

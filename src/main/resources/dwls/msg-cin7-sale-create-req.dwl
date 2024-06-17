@@ -10,7 +10,7 @@ var item = vars.requestPayload.requestBody.payload
     Email: item.Email__c,
     DefaultAccount: item.Default_Account__c,
     SkipQuote: item.Skip_Quote__c,
-    BillingAddress: {
+    (BillingAddress: {
         DisplayAddressLine1: "",
         DisplayAddressLine2: "",
         Line1: item.BillingAddress.Street,
@@ -19,7 +19,7 @@ var item = vars.requestPayload.requestBody.payload
         State: item.BillingAddress.State,
         Postcode: item.BillingAddress.PostalCode,
         Country: item.BillingAddress.Country
-    },
+    }) if(!isEmpty(item.BillingAddress.Street)),
     (ShippingAddress: {
         Id: "",
         DisplayAddressLine1: "",

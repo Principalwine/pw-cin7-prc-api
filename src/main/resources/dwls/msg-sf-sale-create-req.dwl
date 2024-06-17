@@ -13,6 +13,7 @@ var request = vars.requestPayload.requestBody.payload
 		"Cin7ID__c": payload.data.CustomerID
 },
 "EffectiveDate": payload.data.SaleOrderDate,
-"Status": payload.data.Status
+"Status": payload.data.Status,
+"Error_log__c": ""
 	 }]
 }
