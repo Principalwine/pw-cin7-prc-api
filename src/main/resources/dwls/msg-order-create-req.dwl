@@ -52,8 +52,8 @@ var order = vars.salesOrderDetails.data default {}
 	Customer_Reference__c: order.CustomerReference,
 	COGS_Amount__c: order.COGSAmount,
 	
-	(Status: order.Status) if(order.Status == "DRAFT" or order.Status == "ESTIMATING" or order.Status == "ESTIMATED" or order.Status == "ORDERING"), //This is mandatory
-	
+	//(Status: order.Status) if(order.Status == "DRAFT" or order.Status == "ESTIMATING" or order.Status == "ESTIMATED" or order.Status == "ORDERING"), //This is mandatory
+	Status: "DRAFT", //This field is mandatory. We update the status after adding line items
 	
 	Combined_Picking_Status__c: order.CombinedPickingStatus,
 	Combined_Packing_Status__c: order.CombinedPackingStatus,
@@ -70,5 +70,8 @@ var order = vars.salesOrderDetails.data default {}
 	ExternalID__c: order.ExternalID,
 	Service_Only__c: order.ServiceOnly,
 	Tax_Iclusive__c: if(order.TaxCalculation == "Inclusive") true else false,
-	Comments__c: order.Comments
+	Comments__c: order.Comments,
+	Tax__c: order.Order.Tax default 0,
+	Total_Amount__c: order.Order.Total default 0,
+	Total_Before_Tax__c: order.Order.TotalBeforeTax default 0,
 }
