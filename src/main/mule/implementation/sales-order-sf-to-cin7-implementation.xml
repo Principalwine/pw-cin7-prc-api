@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="sales-order-sf-cin7-subflow" doc:id="e4673567-bdc5-42dd-8e5b-cf16f3171d82" >
+		<foreach doc:name="For Each" doc:id="a375d9f4-47cb-4e99-8240-a18be364dee6" collection="#[payload.items]">
+			<set-variable value="#[payload]" doc:name="Payload" doc:id="4d28a641-fb0a-4932-99f2-53aa334013be" variableName="salePayloadFromSF" />
+			<ee:transform doc:name="Create Sale Request" doc:id="c74916df-8785-4a40-9191-de55ddec5588">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var operationName = "CREATE" ++ "-" ++ "SALE"
+---
+{
+	"type": "httpRequest",
+	"httpRequest": {
+		"protocol": Mule::p('cin7-sys-api.protocol') as String,
+		"method": "POST",
+		"host": Mule::p('cin7-sys-api.host') as String,
+		"url": Mule::p('operation.$(operationName).path') as String,
+		"queryParams": {
+			
+		},
+		"uriParams": {
+		},
+		"headers": {
+			"x-correlation-id": correlationId,
+
+  			"client_id": Mule::p('secure::cin7-sys-api.client_id'),
+  			"client_secret": Mule::p('secure::cin7-sys-api.client_secret')
+		},
+	},
+	"operation": operationName,
+	"dwl": Mule::p("operation.$(operationName).dwl") as String,
+	"responseDwl": Mule::p("operation.$(operationName).sfDwl") as String,
+	"errDwl": Mule::p("operation.$(operationName).errDwl") as String,
+	"requestBody": payload
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Create Sale in Cin7" doc:id="30ab369c-9336-4a45-8fff-c7834682e469" name="sf-cin7-implementation-subFlow" />
+			<choice doc:name="Choice" doc:id="c847a735-1ce0-4426-b863-60fa12dde3e0">
+				<when expression="#[!isEmpty(vars.salePayloadFromSF.OrderItems)]">
+					<!-- [STUDIO:"Flow Reference"]<flow-ref doc:name="Flow Reference" doc:id="047364bd-872d-4b31-9f4c-749ce4258177" /> [STUDIO] -->
+					<ee:transform doc:name="Create Order Request" doc:id="766fb8a0-c293-4ec8-b07b-50ab47f3bf00">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var operationName = "CREATE" ++ "-" ++ "ORDER"
+---
+{
+	"type": "httpRequest",
+	"httpRequest": {
+		"protocol": Mule::p('cin7-sys-api.protocol') as String,
+		"method": "POST",
+		"host": Mule::p('cin7-sys-api.host') as String,
+		"url": Mule::p('operation.$(operationName).path') as String,
+		"queryParams": {
+			
+		},
+		"uriParams": {
+		},
+		"headers": {
+			"x-correlation-id": correlationId,
+
+  			"client_id": Mule::p('secure::cin7-sys-api.client_id'),
+  			"client_secret": Mule::p('secure::cin7-sys-api.client_secret')
+		},
+	},
+	"operation": operationName,
+	"dwl": Mule::p("operation.$(operationName).dwl") as String,
+	"responseDwl": Mule::p("operation.$(operationName).sfDwl") as String,
+	"errDwl": Mule::p("operation.$(operationName).errDwl") as String,
+	"requestBody": vars.salePayloadFromSF.OrderItems,
+	"orderNumber": vars.cin7Response.data.ID
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+					<flow-ref doc:name="Create Order in Cin7" doc:id="01c02841-650f-4a69-b5e8-44cdf0427572" name="sf-cin7-implementation-subFlow" />
+				</when>
+				<otherwise>
+					<logger level="INFO" doc:name="Log Info" doc:id="573c8ab3-4e78-4564-8cfa-f7f960e29480" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "INFO",&#10;  MetaData: "Skipping Line items for the order because there are no line items.",&#10;  correlationId: correlationId&#10;}]' />
+				</otherwise>
+			</choice>
+		</foreach>
+	</sub-flow>
+</mule>
