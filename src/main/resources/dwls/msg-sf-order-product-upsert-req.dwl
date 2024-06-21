@@ -82,6 +82,7 @@ var priceBookNameAndId = [
 		Tax_Rule__c: item.TaxRule default "",
 		Discount__c: item.Discount default 0,
 		Drop_Ship__c: item.DropShip default false,
-		Comment__c: item.Comment default ""
+		Comment__c: item.Comment default "",
+		Average_Cost__c: item.AverageCost default 0
 	}
 }

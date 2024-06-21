@@ -200,11 +200,14 @@ var operationName = "CREATE" ++ "-" ++ "ORDER"
         <logger level="INFO" doc:name="Log Exit" doc:id="301cffc7-6080-41c3-bf89-11fa0a56ff64" message="#[%dw 2.0&#xA;output application/json&#xA;&#45;&#45;-&#xA;{&#xA;  flowName: flow.name,&#xA;  apiName: app.name,&#xA;  Name: &quot;EXIT&quot;,&#xA;  MetaData: &quot;Ended upsert in Cin7 and also synced the response back to Salesforce&quot;,&#xA;  correlationId: correlationId&#xA;}&#93;" />
     </flow> [STUDIO] -->
     <flow name="post:\orderItems:application\json:cin7-prc-api-config">
-		<ee:transform doc:name="Create Request" doc:id="766fb8a0-c293-4ec8-b07b-50ab47f3bf00" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<logger level="INFO" doc:name="Log Start" doc:id="e5017661-3e2a-468b-b6fd-9c277422267c" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ENTRY",&#10;  MetaData: "Cin7-process-api Sale event started",&#10;  correlationId: correlationId&#10;}]' />
+		<foreach doc:name="For Each" doc:id="a375d9f4-47cb-4e99-8240-a18be364dee6" collection="#[payload.items]">
+			<set-variable value="#[payload]" doc:name="Payload" doc:id="4d28a641-fb0a-4932-99f2-53aa334013be" variableName="salePayloadFromSF"/>
+			<ee:transform doc:name="Create Sale Request" doc:id="c74916df-8785-4a40-9191-de55ddec5588">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
 output application/json
-var operationName = "CREATE" ++ "-" ++ "ORDER"
+var operationName = "CREATE" ++ "-" ++ "SALE"
 ---
 {
 	"type": "httpRequest",
@@ -231,10 +234,52 @@ var operationName = "CREATE" ++ "-" ++ "ORDER"
 	"errDwl": Mule::p("operation.$(operationName).errDwl") as String,
 	"requestBody": payload
 }]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Create Sale in Cin7" doc:id="30ab369c-9336-4a45-8fff-c7834682e469" name="sf-cin7-implementation-subFlow" />
+			<choice doc:name="Choice" doc:id="c847a735-1ce0-4426-b863-60fa12dde3e0" >
+				<when expression="#[!isEmpty(vars.salePayloadFromSF.OrderItems)]">
+					<ee:transform doc:name="Create Order Request" doc:id="766fb8a0-c293-4ec8-b07b-50ab47f3bf00">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var operationName = "CREATE" ++ "-" ++ "ORDER"
+---
+{
+	"type": "httpRequest",
+	"httpRequest": {
+		"protocol": Mule::p('cin7-sys-api.protocol') as String,
+		"method": "POST",
+		"host": Mule::p('cin7-sys-api.host') as String,
+		"url": Mule::p('operation.$(operationName).path') as String,
+		"queryParams": {
+			
+		},
+		"uriParams": {
+		},
+		"headers": {
+			"x-correlation-id": correlationId,
+
+  			"client_id": Mule::p('secure::cin7-sys-api.client_id'),
+  			"client_secret": Mule::p('secure::cin7-sys-api.client_secret')
+		},
+	},
+	"operation": operationName,
+	"dwl": Mule::p("operation.$(operationName).dwl") as String,
+	"responseDwl": Mule::p("operation.$(operationName).sfDwl") as String,
+	"errDwl": Mule::p("operation.$(operationName).errDwl") as String,
+	"requestBody": vars.salePayloadFromSF.OrderItems,
+	"orderNumber": vars.cin7Response.data.ID
+}]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Log Start" doc:id="e5017661-3e2a-468b-b6fd-9c277422267c" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ENTRY",&#10;  MetaData: "Cin7-process-api Sale event started",&#10;  correlationId: correlationId&#10;}]' />
-		<flow-ref doc:name="sf-cin7-implementationSub_Flow" doc:id="30ab369c-9336-4a45-8fff-c7834682e469" name="sf-cin7-implementation-subFlow" />
+					<flow-ref doc:name="Create Order in Cin7" doc:id="01c02841-650f-4a69-b5e8-44cdf0427572" name="sf-cin7-implementation-subFlow" />
+				</when>
+				<otherwise >
+					<logger level="INFO" doc:name="Log Info" doc:id="573c8ab3-4e78-4564-8cfa-f7f960e29480" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "INFO",&#10;  MetaData: "Skipping Line items for the order because there are no line items.",&#10;  correlationId: correlationId&#10;}]'/>
+				</otherwise>
+			</choice>
+		</foreach>
 		<logger level="INFO" doc:name="Log Exit" doc:id="19028660-8aad-4448-b4a7-777f3d22ec09" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended upsert in Cin7 and also synced the response back to Salesforce",&#10;  correlationId: correlationId&#10;}]' />
 		<ee:transform doc:name="Transform Message">
             <ee:message>

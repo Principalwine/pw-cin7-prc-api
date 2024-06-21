@@ -1,11 +1,11 @@
 %dw 2.0
 output application/json
-var item = vars.requestPayload.requestBody.payload
+var item = vars.requestPayload.requestBody
 ---
 {
     //Customer: "",
     CustomerID: item.Cin7_AccountID__c,
-    //Contact: item.ContactId__c,
+    (Contact: item.ContactId__r.Name) if(!isEmpty(item.ContactId__r.Name default null)),
     Phone: item.Phone__c,
     Email: item.Email__c,
     DefaultAccount: item.Default_Account__c,
@@ -13,27 +13,27 @@ var item = vars.requestPayload.requestBody.payload
     (BillingAddress: {
         DisplayAddressLine1: "",
         DisplayAddressLine2: "",
-        Line1: item.BillingAddress.Street,
+        Line1: item.BillingStreet,
         Line2: "",
-        City: item.BillingAddress.City,
-        State: item.BillingAddress.State,
-        Postcode: item.BillingAddress.PostalCode,
-        Country: item.BillingAddress.Country
-    }) if(!isEmpty(item.BillingAddress.Street)),
+        City: item.BillingCity,
+        State: item.BillingState,
+        Postcode: item.BillingPostalCode,
+        Country: item.BillingCountry
+    }) if(!isEmpty(item.BillingStreet)),
     (ShippingAddress: {
         Id: "",
         DisplayAddressLine1: "",
         DisplayAddressLine2: "",
-        Line1: item.ShippingAddress.Street,
+        Line1: item.ShippingStreet,
         Line2: "",
-        City: item.ShippingAddress.City,
-        State: item.ShippingAddress.State,
-        Postcode: item.ShippingAddress.PostalCode,
-        Country: item.ShippingAddress.Country,
+        City: item.ShippingCity,
+        State: item.ShippingState,
+        Postcode: item.ShippingPostalCode,
+        Country: item.ShippingCountry,
         Company: "",
         Contact: "",
         ShipToOther: false
-    }) if(!isEmpty(item.ShippingAddress.Street)),
+    }) if(!isEmpty(item.ShippingStreet)),
     ShippingNotes: item.Shipping_Notes__c,
     BaseCurrency: item.Base_Currency__c,
     CustomerCurrency: item.Customer_Currency__c,
@@ -43,12 +43,12 @@ var item = vars.requestPayload.requestBody.payload
     PriceTier: item.PriceTier__c,
     ShipBy: item.ShipBy__c,
     (Location: item.Location_cin7_id__c) if(!isEmpty(item.Location_cin7_id__c)),
-    SaleOrderDate: item.Sale_Order_Date__c,
-    LastModifiedOn: item.LastModifiedOn__c,
+    SaleOrderDate: item.EffectiveDate,
+    (LastModifiedOn: item.LastModifiedOn__c) if(!isEmpty(item.LastModifiedOn__c)),
     Note: item.Note__c,
     CustomerReference: item.Customer_Reference__c,
     COGSAmount: item.COGS_Amount__c,
-    Status: item.Status__c,
+    Status: item.Status,
     CombinedPickingStatus: item.Combined_Picking_Status__c,
     CombinedPackingStatus: item.Combined_Packing_Status__c,
     CombinedShippingStatus: item.Combined_Shipping_Status__c,
@@ -58,7 +58,7 @@ var item = vars.requestPayload.requestBody.payload
     CombinedTrackingNumbers: item.Combined_Tracking_Numbers__c,
     Carrier: item.Carrier__c,
     CurrencyRate: item.Currency_Rate__c,
-    SalesRepresentative: item.Sales_Representative__c,
+    (SalesRepresentative: item.Sales_Representative_Name__c) if(!isEmpty(item.Sales_Representative_Name__c)),
     Type: item.Type__c,
     SourceChannel: item.Source_Channel__c,
     ExternalID: item.ExternalID__c,

@@ -25,6 +25,7 @@ vars.requestPayload.httpRequest.headers]]]></http:headers>
 		</until-successful>
 			<choice doc:name="Choice" doc:id="a9c47974-fd5c-468c-b084-ce44c5945431">
 				<when expression="#[attributes.statusCode == 200 or attributes.statusCode == 201]">
+					<set-variable value="#[payload]" doc:name="Cin7 Response" doc:id="898f21e9-8d0a-4c5e-b9af-12efb31bd156" variableName="cin7Response"/>
 					<choice doc:name="Choice" doc:id="1931cdcf-ccfb-48ac-bbc7-0032a4628711">
 						<when expression='#[vars.requestPayload.operation contains "CUSTOMER"]'>
 							<set-variable value="#[payload.data.SalesRepresentative]" doc:name="salesRepresentative" doc:id="3d865c03-9709-4a80-8d48-0c8ef848c50b" variableName="salesRepresentative" />
