@@ -72,11 +72,18 @@ output application/json
 				</error-handler>
 			</try>
 			<flow-ref doc:name="Create Order Line Items" doc:id="a4aba81d-5244-49b6-a442-090bb2c71a59" name="create-order-line-items-subflow" />
-			<ee:transform doc:name="Update Order Status" doc:id="4b6ea12d-5e5f-40d0-b6e1-060a773087e8">
+			<ee:transform doc:name="Update Order Status and After Credit Note Details" doc:id="4b6ea12d-5e5f-40d0-b6e1-060a773087e8">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 var order = vars.salesOrderDetails.data default {}
+
+var creditItems = vars.salesOrderDetails.data.CreditNotes default [] map(item, index) -> {
+    total: item.Total default 0,
+    totalBeforeTax: item.TotalBeforeTax default 0,
+    tax: item.Tax default 0,
+    memo: item.Memo default ""
+}
 ---
 {
 	Cin7_ID__c: order.ID,
@@ -88,7 +95,11 @@ var order = vars.salesOrderDetails.data default {}
 	EffectiveDate: order.SaleOrderDate,
 	LastModifiedOn__c: order.LastModifiedOn,	
 	Status: order.Status, //This is mandatory
-
+	Tax__c: (order.Order.Tax default 0) - (creditItems.tax reduce $$ + $  default 0),
+	Total_Amount__c: (order.Order.Total default 0) - (creditItems.total reduce $$ + $  default 0),
+	Total_Before_Tax__c: (order.Order.TotalBeforeTax default 0) - (creditItems.totalBeforeTax reduce $$ + $  default 0),
+	Credit_Memo__c: creditItems.memo reduce ((item, acc = "") -> acc ++ item)
+	
 }
 ]]></ee:set-payload>
 			</ee:message>

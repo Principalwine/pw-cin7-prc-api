@@ -57,6 +57,11 @@ var priceBookNameAndId = [
     "cin7Label" : "PriceTier10"
   } 
 ]
+
+var creditItems = flatten((vars.salesOrderDetails.data.CreditNotes default [] map (creditNotes) -> {
+    "lines": creditNotes.Lines
+}).lines) default []
+
 ---
 {
 	"objectName": "OrderItem",
@@ -74,15 +79,24 @@ var priceBookNameAndId = [
 	    	Cin7ID__c: item.ProductID ++ "-" ++ (priceBookNameAndId filter ((item, index) -> item.Name == vars.SalesOrderDetails.data.PriceTier))[0].cin7Label
 	    },
 	    UnitPrice: item.Price,
-	    Quantity: item.Quantity,
+	    
 	    Stock__r: {
 	    	Cin7_StockID__c: item.ProductID ++ "-" ++ vars.locationDetails.data.LocationList[0].ID
 	    },
-		Total_Price__c: item.Total,
+	    (if(!isEmpty(creditItems filter ((creditItem) -> creditItem.ProductID
+    == item.ProductID))){
+		    Quantity: item.Quantity - (creditItems filter ((crItem, index) -> item.ProductID == crItem.ProductID))[0].Quantity,
+			Total_Price__c: item.Total - (creditItems filter ((crItem, index) -> item.ProductID == crItem.ProductID))[0].Total,
+		}else{
+		    Quantity: item.Quantity,
+			Total_Price__c: item.Total,
+		}),
+		
 		Tax_Rule__c: item.TaxRule default "",
 		Discount__c: item.Discount default 0,
 		Drop_Ship__c: item.DropShip default false,
 		Comment__c: item.Comment default "",
+		Tax__c: item.Tax default 0,
 		Average_Cost__c: item.AverageCost default 0
 	}
 }
