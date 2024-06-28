@@ -78,18 +78,22 @@ var creditItems = flatten((vars.salesOrderDetails.data.CreditNotes default [] ma
 	    PricebookEntry:{
 	    	Cin7ID__c: item.ProductID ++ "-" ++ (priceBookNameAndId filter ((item, index) -> item.Name == vars.SalesOrderDetails.data.PriceTier))[0].cin7Label
 	    },
-	    UnitPrice: item.Price,
+	    
 	    
 	    Stock__r: {
 	    	Cin7_StockID__c: item.ProductID ++ "-" ++ vars.locationDetails.data.LocationList[0].ID
 	    },
 	    (if(!isEmpty(creditItems filter ((creditItem) -> creditItem.ProductID
     == item.ProductID))){
-		    Quantity: item.Quantity - (creditItems filter ((crItem, index) -> item.ProductID == crItem.ProductID))[0].Quantity,
+		    Quantity: if(item.Quantity - (creditItems filter ((crItem, index) -> item.ProductID == crItem.ProductID))[0].Quantity <= 0) 1 
+		    		  else item.Quantity - (creditItems filter ((crItem, index) -> item.ProductID == crItem.ProductID))[0].Quantity ,
 			Total_Price__c: item.Total - (creditItems filter ((crItem, index) -> item.ProductID == crItem.ProductID))[0].Total,
+			UnitPrice: if(item.Quantity - (creditItems filter ((crItem, index) -> item.ProductID == crItem.ProductID))[0].Quantity <= 0) 0 
+					   else item.Price,
 		}else{
 		    Quantity: item.Quantity,
 			Total_Price__c: item.Total,
+			UnitPrice: item.Price,
 		}),
 		
 		Tax_Rule__c: item.TaxRule default "",
