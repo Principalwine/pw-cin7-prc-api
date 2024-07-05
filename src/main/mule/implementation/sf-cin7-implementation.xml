@@ -7,6 +7,100 @@
 	xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="get-customer-sales-representative-subflow" doc:id="a0a7ec32-8008-4bf8-843b-26583908a642" >
+		<choice doc:name="Choice" doc:id="1931cdcf-ccfb-48ac-bbc7-0032a4628711">
+						<when expression='#[vars.requestPayload.operation contains "CUSTOMER"]'>
+							<set-variable value="#[payload.data.SalesRepresentative]" doc:name="salesRepresentative" doc:id="3d865c03-9709-4a80-8d48-0c8ef848c50b" variableName="salesRepresentative" />
+							<flow-ref doc:name="check-sales-representative-subflow" doc:id="0a5a43a4-a6f3-46c5-8493-03d968c9f2bf" name="check-sales-representative-subflow" />
+						</when>
+						<otherwise>
+							<logger level="DEBUG" doc:name="Log Info" doc:id="9da99bd0-c18e-409a-aa4a-318e5aaf456b" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Info",&#10;  MetaData: "Request to SF",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+						</otherwise>
+					</choice>
+	</sub-flow>
+	<sub-flow name="sf-cin7-implementation-subFlow" doc:id="652a8f34-87ee-41b0-ae1f-4e0a15b51abc">
+		<try doc:name="Try" doc:id="35883cd7-969d-4490-a7de-aca78a76a7c8">
+			<set-variable value="#[payload]" doc:name="requestPayload" doc:id="9ad2f3b5-a245-43ef-864d-bf9321e3f60b" variableName="requestPayload" />
+			<ee:dynamic-evaluate doc:name="Set Payload" doc:id="088cf8cd-7200-4e66-8900-64f50c7c12ba" expression="#[readUrl(&quot;classpath://dwls/&quot; ++ (vars.requestPayload.dwl as String) ++ &quot;.dwl&quot;, 'text/plain')]" />
+			<logger level="DEBUG" doc:name="Log Outbound" doc:id="1235c6d3-0bd1-40c5-83bf-c657ae1f02dd" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to cin system api started",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+			<until-successful maxRetries="5" doc:name="Until Successful" doc:id="86a9fdf6-90a0-4df9-afa2-dedef669145f">
+			<http:request method="#[vars.requestPayload.httpRequest.method]" doc:name="Cin7-Sys-Api" doc:id="83ada24a-e3fc-46e3-b2c7-d93d503e833e" url='#[(vars.requestPayload.httpRequest.protocol as String) ++ "://" ++ (vars.requestPayload.httpRequest.host as String)  ++ (vars.requestPayload.httpRequest.url as String)]'>
+					<http:headers><![CDATA[#[output application/java
+---
+vars.requestPayload.httpRequest.headers]]]></http:headers>
+					<http:query-params><![CDATA[#[vars.requestPayload.httpRequest.queryParams]]]></http:query-params>
+					<http:response-validator>
+						<http:success-status-code-validator values="${request.response.values}" />
+					</http:response-validator>
+				</http:request>
+		</until-successful>
+			<choice doc:name="Choice" doc:id="a9c47974-fd5c-468c-b084-ce44c5945431">
+				<when expression="#[attributes.statusCode == 200 or attributes.statusCode == 201]">
+					<set-variable value="#[payload]" doc:name="Cin7 Response" doc:id="898f21e9-8d0a-4c5e-b9af-12efb31bd156" variableName="cin7Response"/>
+						<flow-ref doc:name="Customer-sales-represenative-subflow" doc:id="54ba38ea-4eb9-4df2-805b-c5b05f5a33c9" name="get-customer-sales-representative-subflow" />
+					<choice doc:name="Choice" doc:id="34866d16-7848-412d-be46-2659d649a1c8">
+							<when expression='#[(vars.requestPayload.operation == "UPSERT-SALE-ORDER" or vars.requestPayload.operation == "GET-LOCATION" or vars.requestPayload.operation == "GET-TAX" or vars.requestPayload.operation == "GET-ACCOUNT") and vars.requestPayload.httpRequest.method == "GET"]'>
+								<logger level="INFO" doc:name="Logger" doc:id="08379bda-40d5-4dfd-b0d4-3c9f1255e1cd" message='#["Sales Order Details from Cin7 Fetched Successfully"]' />
+							</when>
+							<otherwise>
+								<flow-ref doc:name="salesforce-update-subFlow" doc:id="76f114d6-fc32-4db7-8df1-ae4a0bb90ea2" name="salesforce-update-subFlow" />
+							</otherwise>
+						</choice>
+				</when>
+				<otherwise>
+					<ee:transform doc:name="Error Variables" doc:id="3bd423c3-e457-4f85-bd50-92827576d8ce">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable variableName="system"><![CDATA["Salesforce to Cin7 Sync."]]></ee:set-variable>
+							<ee:set-variable variableName="entity"><![CDATA[vars.requestPayload.operation ++ " Sync."]]></ee:set-variable>
+							<ee:set-variable variableName="errorPayload"><![CDATA[%dw 2.0
+output application/json
+---
+//payload.message default "Error occured while processing the request in cin7-proc-api"
+{
+	errorCode: payload.errorCode default 500,
+	description: payload.description default "Unknown description",
+	message: payload.message default "Error occured while processing the request in cin7-proc-api"
+}]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<flow-ref doc:name="salesforce-error-update-subflow" doc:id="88dcb6d7-04ae-49fa-8226-dffa7894ee00" name="salesforce-error-update-subflow" />
+				</otherwise>
+			</choice>
+			<logger level="DEBUG" doc:name="Log Inbound" doc:id="8ffdc2a5-ebfc-4593-84b0-10eda5468b1b" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to cin system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+			<error-handler>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c722eb95-f04e-4629-8896-c68167e606e4">
+					<set-variable value='#["Error while processing the create request in Cin-process-API !!"]' doc:name="errorContext" doc:id="7736acdc-1ad7-4573-9223-5ae19d0c5bb1" variableName="errorContext" />
+					<ee:transform doc:name="Error Transformation" doc:id="7a7e80f0-384f-4cee-aa01-291dc5f0b69f">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+}]]></ee:set-payload>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable variableName="system"><![CDATA[%dw 2.0
+output application/json
+---
+vars.system default "Salesforce to Cin7 Sync."]]></ee:set-variable>
+							<ee:set-variable variableName="entity"><![CDATA[%dw 2.0
+output application/json
+---
+vars.entity default (vars.requestPayload.operation ++ " Sync.")]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<logger level="INFO" doc:name="Log Error" doc:id="54257673-13f3-4b73-a767-c3b1b3e1dc83" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Error",&#10;  MetaData: "Error while syncing data to CIN7",&#10;  correlationId: correlationId,&#10;  errorPayload: payload&#10;}]' />
+					<flow-ref doc:name="send-email-subflow" doc:id="5da41f3e-bf00-41cd-a4f7-83b2e29e9762" name="send-email-subflow" />
+				</on-error-propagate>
+			</error-handler>
+		</try>
+
+	</sub-flow>
 	<sub-flow name="salesforce-update-subFlow" doc:id="c99771bc-b190-42d2-b525-9b1c9021b17f" >
 		<ee:dynamic-evaluate doc:name="SF Request" doc:id="4c2a7c2b-8c61-4f0a-99f4-bd7e0e130b58" expression="#[readUrl(&quot;classpath://dwls/&quot; ++ (vars.requestPayload.responseDwl as String) ++ &quot;.dwl&quot;, 'text/plain')]" />
 		<try doc:name="Try" doc:id="12843b5d-ae1c-47ce-8e99-ef3bb9ecd383">
@@ -51,99 +145,10 @@ vars.errorPayload]]></ee:set-payload>
 					</ee:transform>
 		<flow-ref doc:name="send-email-subflow" doc:id="329b6a0a-28c0-4434-9d62-6e447147b4a8" name="send-email-subflow" />
 	</sub-flow>
-	<sub-flow name="sf-cin7-implementation-subFlow" doc:id="652a8f34-87ee-41b0-ae1f-4e0a15b51abc" >
-		<try doc:name="Try" doc:id="35883cd7-969d-4490-a7de-aca78a76a7c8" >
-			<set-variable value="#[payload]" doc:name="requestPayload" doc:id="9ad2f3b5-a245-43ef-864d-bf9321e3f60b" variableName="requestPayload" />
-			<ee:dynamic-evaluate doc:name="Set Payload" doc:id="088cf8cd-7200-4e66-8900-64f50c7c12ba" expression="#[readUrl(&quot;classpath://dwls/&quot; ++ (vars.requestPayload.dwl as String) ++ &quot;.dwl&quot;, 'text/plain')]" />
-			<logger level="DEBUG" doc:name="Log Outbound" doc:id="1235c6d3-0bd1-40c5-83bf-c657ae1f02dd" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to cin system api started",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
-			<until-successful maxRetries="5" doc:name="Until Successful" doc:id="86a9fdf6-90a0-4df9-afa2-dedef669145f">
-			<http:request method="#[vars.requestPayload.httpRequest.method]" doc:name="Cin7-Sys-Api" doc:id="83ada24a-e3fc-46e3-b2c7-d93d503e833e" url='#[(vars.requestPayload.httpRequest.protocol as String) ++ "://" ++ (vars.requestPayload.httpRequest.host as String)  ++ (vars.requestPayload.httpRequest.url as String)]' >
-					<http:headers ><![CDATA[#[output application/java
----
-vars.requestPayload.httpRequest.headers]]]></http:headers>
-					<http:response-validator >
-						<http:success-status-code-validator values="${request.response.values}"/>
-					</http:response-validator>
-				</http:request>
-		</until-successful>
-			<choice doc:name="Choice" doc:id="a9c47974-fd5c-468c-b084-ce44c5945431">
-				<when expression="#[attributes.statusCode == 200 or attributes.statusCode == 201]">
-					<choice doc:name="Choice" doc:id="1931cdcf-ccfb-48ac-bbc7-0032a4628711">
-						<when expression='#[vars.requestPayload.operation contains "CUSTOMER"]'>
-							<set-variable value="#[payload.data.SalesRepresentative]" doc:name="salesRepresentative" doc:id="3d865c03-9709-4a80-8d48-0c8ef848c50b" variableName="salesRepresentative" />
-							<flow-ref doc:name="check-sales-representative-subflow" doc:id="0a5a43a4-a6f3-46c5-8493-03d968c9f2bf" name="check-sales-representative-subflow" />
-						</when>
-						<otherwise>
-							<logger level="DEBUG" doc:name="Log Info" doc:id="9da99bd0-c18e-409a-aa4a-318e5aaf456b" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Info",&#10;  MetaData: "Request to SF",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
-						</otherwise>
-					</choice>
-						<choice doc:name="Choice" doc:id="34866d16-7848-412d-be46-2659d649a1c8">
-							<when expression='#[vars.requestPayload.operation == "UPSERT-SALE-ORDER" and vars.requestPayload.httpRequest.method == "GET"]'>
-								<logger level="INFO" doc:name="Logger" doc:id="08379bda-40d5-4dfd-b0d4-3c9f1255e1cd" message='#["Sales Order Details from Cin7 Fetched Successfully"]' />
-							</when>
-							<otherwise>
-								<flow-ref doc:name="salesforce-update-subFlow" doc:id="76f114d6-fc32-4db7-8df1-ae4a0bb90ea2" name="salesforce-update-subFlow" />
-							</otherwise>
-						</choice>
-				</when>
-				<otherwise>
-					<ee:transform doc:name="Error Variables" doc:id="3bd423c3-e457-4f85-bd50-92827576d8ce">
-						<ee:message>
-						</ee:message>
-						<ee:variables>
-							<ee:set-variable variableName="system"><![CDATA["Salesforce to Cin7 Sync."]]></ee:set-variable>
-							<ee:set-variable variableName="entity"><![CDATA[vars.requestPayload.operation ++ " Sync."]]></ee:set-variable>
-							<ee:set-variable variableName="errorPayload"><![CDATA[%dw 2.0
-output application/json
----
-//payload.message default "Error occured while processing the request in cin7-proc-api"
-{
-	errorCode: payload.errorCode default 500,
-	description: payload.description default "Unknown description",
-	message: payload.message default "Error occured while processing the request in cin7-proc-api"
-}]]></ee:set-variable>
-						</ee:variables>
-					</ee:transform>
-					<flow-ref doc:name="salesforce-error-update-subflow" doc:id="88dcb6d7-04ae-49fa-8226-dffa7894ee00" name="salesforce-error-update-subflow" />
-				</otherwise>
-			</choice>
-			<logger level="DEBUG" doc:name="Log Inbound" doc:id="8ffdc2a5-ebfc-4593-84b0-10eda5468b1b" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to cin system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]'/>
-			<error-handler >
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c722eb95-f04e-4629-8896-c68167e606e4" >
-					<set-variable value='#["Error while processing the create request in Cin-process-API !!"]' doc:name="errorContext" doc:id="7736acdc-1ad7-4573-9223-5ae19d0c5bb1" variableName="errorContext"/>
-					<ee:transform doc:name="Error Transformation" doc:id="7a7e80f0-384f-4cee-aa01-291dc5f0b69f">
-						<ee:message >
-							<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
-	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
-	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
-}]]></ee:set-payload>
-						</ee:message>
-						<ee:variables>
-							<ee:set-variable variableName="system"><![CDATA[%dw 2.0
-output application/json
----
-vars.system default "Salesforce to Cin7 Sync."]]></ee:set-variable>
-							<ee:set-variable variableName="entity"><![CDATA[%dw 2.0
-output application/json
----
-vars.entity default (vars.requestPayload.operation ++ " Sync.")]]></ee:set-variable>
-						</ee:variables>
-					</ee:transform>
-					<logger level="INFO" doc:name="Log Error" doc:id="54257673-13f3-4b73-a767-c3b1b3e1dc83" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Error",&#10;  MetaData: "Error while syncing data to CIN7",&#10;  correlationId: correlationId,&#10;  errorPayload: payload&#10;}]'/>
-					<flow-ref doc:name="send-email-subflow" doc:id="5da41f3e-bf00-41cd-a4f7-83b2e29e9762" name="send-email-subflow"/>
-				</on-error-propagate>
-			</error-handler>
-		</try>
-
-	</sub-flow>
 	<sub-flow name="get-account-contact-address-from-sf" doc:id="10dacfe4-bb4a-49ae-947f-1636d63b7876" >
 		<try doc:name="Try" doc:id="a7a1125a-f3a0-480a-98e9-40625347a720" >
 			<choice doc:name="Choice" doc:id="d3312f83-8810-4fac-9251-2ec714bbc3a5">
-			<when expression='#[payload.data.payload.ChangeEventHeader.changeType as String == "UPDATE" and (isEmpty(payload.data.payload.Cin7ID__c) or payload.data.payload.ChangeEventHeader.entityName == "Contact")]'>
+			<when expression='#[payload.data.payload.ChangeEventHeader.changeType as String == "UPDATE" and not (payload.data.payload.ChangeEventHeader.entityName as String == "Order" or payload.data.payload.ChangeEventHeader.entityName as String == "OrderItem") and (isEmpty(payload.data.payload.Cin7ID__c) or payload.data.payload.ChangeEventHeader.entityName == "Contact")]'>
 				<set-variable value='#[if(payload.data.payload.ChangeEventHeader.entityName == "Account")  "msg-sf-query-account" &#10;else if(payload.data.payload.ChangeEventHeader.entityName == "Contact") "msg-sf-query-contact"&#10;else "msg-sf-query-address"]' doc:name="queryEntity" doc:id="80a73fd6-fbe5-485e-a5af-c876b57579e6" variableName="queryEntity" />
 				<ee:dynamic-evaluate doc:name="Get SF Query Object" doc:id="f4a89bba-4674-4e11-9cce-2e768fa4d70a" expression="#[readUrl(&quot;classpath://dwls/&quot; ++ (vars.queryEntity as String) ++ &quot;.dwl&quot;, 'text/plain')]" target="query" />
 				<flow-ref doc:name="request-to-salesforce-query-subflow" doc:id="a596a3ff-48d5-4e7f-a38a-0899a7058ef5" name="request-to-salesforce-query-subflow" />

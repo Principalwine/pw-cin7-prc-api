@@ -7,7 +7,8 @@ salesforce:
   token: "![VaF4aS6gYQeAwFtFlIkTb+xzP8DRx8oNePxa6wSHz7M=]"
   url: "https://principalwine--sachin.sandbox.my.salesforce.com/services/Soap/u/58.0"
   account-event: "/data/Cin7Events__chn"
-#  contact-event: "/data/Cin7Events__chn"
+  sale-event: "/data/OrderChangeEvent"
+  order-event: "/data/OrderItemChangeEvent"
   
 sfdc:
   basepath: "/api/v1"
@@ -61,8 +62,33 @@ operation:
     errDwl: "err-sf-product-upsert-req"
     
   UPSERT-SALE-ORDER:
-    dwl: "msg-sf-sale-order-upsert-req"
-    path: "/api/addresses"
+    dwl: "msg-null-get-req"
+    path: "/api/sales"
+    errDwl: "err-sf-order-upsert-cin7-to-sf-sync-req"
+    
+  GET-LOCATION:
+    dwl: "msg-null-get-req"
+    path: "/api/locations"
+    
+  CREATE-SALE:
+    dwl: "msg-cin7-sale-create-req"
+    sfDwl: "msg-sf-sale-create-req"
+    errDwl: "err-sf-sale-create-sf-to-cin7-req"
+    path: "/api/sales"
+    
+  CREATE-ORDER:
+    dwl: "msg-cin7-order-create-req"
+    sfDwl: "msg-sf-order-create-sync-req"
+    errDwl: "err-sf-order-create-sf-to-cin7-req"
+    path: "/api/order"
+    
+  GET-ACCOUNT:
+    dwl: "msg-null-get-req"
+    path: "/api/customers"
+    
+  GET-TAX:
+    dwl: "msg-null-get-req"
+    path: "/api/tax"
     
 cin7-sys-api:
   host: "pw-cin7-sys-api-dev-o4o3m1.5sc6y6-2.usa-e2.cloudhub.io"

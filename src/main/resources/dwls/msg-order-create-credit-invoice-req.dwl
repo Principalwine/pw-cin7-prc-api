@@ -74,6 +74,4 @@ var order = vars.salesOrderDetails.data default {}
 	Tax__c: order.Order.Tax default 0,
 	Total_Amount__c: order.Order.Total default 0,
 	Total_Before_Tax__c: order.Order.TotalBeforeTax default 0,
-	Sync_with_Cin7__c: true,
-	(Cin7_Order__c: order.Order.SaleOrderNumber) if(!isEmpty(order.Order.SaleOrderNumber))
 }

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="tax-cin7-to-sf-implementationFlow" doc:id="6c13707f-7a89-44dc-bac1-5d7283d6de61" initialState="stopped">
+		<scheduler doc:name="Scheduler" doc:id="1651aa0d-d89d-4d6d-9ca0-a929e8fa738b" >
+			<scheduling-strategy >
+				<cron expression="0 0 0 ? * * *" timeZone="ACT" />
+			</scheduling-strategy>
+		</scheduler>
+		<logger level="INFO" doc:name="Log Start" doc:id="6d4d88f8-1eb3-4e85-b55b-0dd33a46b333" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "ENTRY",&#10;  MetaData: "Started scheduler for tax",&#10;  correlationId: correlationId&#10;}]'/>
+		<ee:transform doc:name="Create Request" doc:id="731a5d26-bd18-4ab7-9101-adfaf87b9867" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var operationName = "GET" ++ "-" ++ "TAX"
+---
+{
+	"type": "httpRequest",
+	"httpRequest": {
+		"protocol": Mule::p('cin7-sys-api.protocol') as String,
+		"method": "GET",
+		"host": Mule::p('cin7-sys-api.host') as String,
+		"url": Mule::p('operation.$(operationName).path') as String,
+		"queryParams": {
+		},
+		"uriParams": {
+		},
+		"headers": {
+			"x-correlation-id": correlationId,
+
+  			"client_id": Mule::p('secure::cin7-sys-api.client_id'),
+  			"client_secret": Mule::p('secure::cin7-sys-api.client_secret')
+		},
+	},
+	"operation": operationName,
+	"dwl": Mule::p("operation.$(operationName).dwl") as String,
+	
+	"requestBody": payload
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Get Tax Details From Cin7" doc:id="2aa1869f-c65d-45e8-8207-d579811deca9" name="sf-cin7-implementation-subFlow"/>
+		<ee:transform doc:name="Tax Details Request" doc:id="9bd1ace1-3d4a-436b-9f15-546e89d32655" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"objectName": "Tax_Rule__c",
+  	"externalField": "Cin7Id__c",
+    "data": payload.data.TaxRuleList map(obj, index) -> {
+    Account__c:obj.Account,
+    Cin7Id__c: obj.ID,
+    IsActive__c: obj.IsActive,
+    IsTaxForPurchase__c: obj.IsTaxForPurchase,
+    IsTaxForSale__c: obj.IsTaxForSale,
+    Name: obj.Name,
+    TaxInclusive__c: obj.TaxInclusive,
+    TaxPercent__c: obj.TaxPercent
+}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Update Tax Details in Salesforce" doc:id="360e8d7b-9f89-41c2-b8d8-69b6856c00da" name="request-to-salesforce-upsert-subflow"/>
+		<logger level="INFO" doc:name="Log Exit" doc:id="f6972525-355c-4ebe-82eb-7c6885f09da3" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended upsert tax details in salesforce",&#10;  correlationId: correlationId&#10;}]'/>
+	</flow>
+</mule>

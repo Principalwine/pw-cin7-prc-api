@@ -2,12 +2,13 @@ app:
   autodiscovery: "19513881"
 
 salesforce:
-  username: "siddhartha.pal@nttdata.com.sachin"
-  password: "![ItAaX7qTsEywysnn8T89eQ==]"
-  token: "![VaF4aS6gYQeAwFtFlIkTb+xzP8DRx8oNePxa6wSHz7M=]"
-  url: "https://principalwine--sachin.sandbox.my.salesforce.com/services/Soap/u/58.0"
+  username: "sameet.bhole@nttdata.com.uat"
+  password: "![kBzmZcM+8uDoYnf29SyNkA==]"
+  token: "![3u4MDhoUfnhrtkSHOs2+XyeMox7Hw7ZvQzLdz5Dt6kk=]"
+  url: "https://principalwine--uat.sandbox.my.salesforce.com/services/Soap/u/58.0"
   account-event: "/data/Cin7Events__chn"
-#  contact-event: "/data/Cin7Events__chn"
+  sale-event: "/data/OrderChangeEvent"
+  order-event: "/data/OrderItemChangeEvent"
   
 sfdc:
   basepath: "/api/v1"
@@ -59,6 +60,35 @@ operation:
   UPSERT-PRODUCT:
     dwl: "msg-sf-product-upsert-req"
     errDwl: "err-sf-product-upsert-req"
+    
+  UPSERT-SALE-ORDER:
+    dwl: "msg-null-get-req"
+    path: "/api/sales"
+    errDwl: "err-sf-order-upsert-cin7-to-sf-sync-req"
+    
+  GET-LOCATION:
+    dwl: "msg-null-get-req"
+    path: "/api/locations"
+    
+  CREATE-SALE:
+    dwl: "msg-cin7-sale-create-req"
+    sfDwl: "msg-sf-sale-create-req"
+    errDwl: "err-sf-sale-create-sf-to-cin7-req"
+    path: "/api/sales"
+    
+  CREATE-ORDER:
+    dwl: "msg-cin7-order-create-req"
+    sfDwl: "msg-sf-order-create-sync-req"
+    errDwl: "err-sf-order-create-sf-to-cin7-req"
+    path: "/api/order"
+    
+  GET-ACCOUNT:
+    dwl: "msg-null-get-req"
+    path: "/api/customers"
+    
+  GET-TAX:
+    dwl: "msg-null-get-req"
+    path: "/api/tax"
     
 cin7-sys-api:
   host: "pw-cin7-sys-api-uat-1aarxz.5sc6y6-2.usa-e2.cloudhub.io"
