@@ -64,42 +64,4 @@ var operationName = "UPSERT" ++ "-" ++ "PRODUCT"
         </ee:transform>
 		<logger level="INFO" doc:name="Log Exit" doc:id="19028660-8aad-4448-b4a7-777f3d22ec09" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "EXIT",&#10;  MetaData: "Ended upsert in Cin7 and also synced the response back to Salesforce",&#10;  correlationId: correlationId&#10;}]' />
     </flow>
-	<!-- [STUDIO:"put:\salesOrders:application\json:cin7-prc-api-config"]<flow name="put:\salesOrders:application\json:cin7-prc-api-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
-&#45;&#45;-
-{
-  success: true,
-  apiName: "pw-cin7-exp-api",
-  version: "v1.0.0",
-  correlationId: "05c09130-75a2-11eb-9dcf-aed564bf8171",
-  timestamp: "1970-01-01T00:00:01.001-06:00",
-  data: {
-    message: "Resource created"
-  }
-} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow> [STUDIO] -->
-	<!-- [STUDIO:"post:\stocks:application\json:cin7-prc-api-config"]<flow name="post:\stocks:application\json:cin7-prc-api-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
-&#45;&#45;-
-{
-  success: true,
-  apiName: "pw-cin7-exp-api",
-  version: "v1.0.0",
-  correlationId: "05c09130-75a2-11eb-9dcf-aed564bf8171",
-  timestamp: "1970-01-01T00:00:01.001-06:00",
-  data: {
-    message: "Resource created"
-  }
-} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow> [STUDIO] -->
 </mule>

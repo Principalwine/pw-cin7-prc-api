@@ -24,16 +24,6 @@ var item = payload.requestBody.payload
     IsOnCreditHold: item.On_Credit_Hold__c as Boolean default false,
     LastModifiedOn: item.LastModifiedDate,
     AdditionalAttribute1: item.AdditionalAttribute1__c default "",
-//    AdditionalAttribute2: "",
-//    AdditionalAttribute3: "",
-//    AdditionalAttribute4: "",
-//    AdditionalAttribute5: "",
-//    AdditionalAttribute6: "",
-//    AdditionalAttribute7: "",
-//    AdditionalAttribute8: "",
-//    AdditionalAttribute9: "",
-//    AdditionalAttribute10: "",
-
 
     Addresses: [],
     Contacts: []

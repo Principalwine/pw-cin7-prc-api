@@ -3,7 +3,7 @@ output application/json
 var item = vars.requestPayload.requestBody
 ---
 {
-    //Customer: "",
+    
     CustomerID: item.Cin7_AccountID__c,
     (Contact: item.ContactId__r.Name) if(!isEmpty(item.ContactId__r.Name default null)),
     Phone: item.Phone__c,
