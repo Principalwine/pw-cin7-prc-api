@@ -43,7 +43,6 @@ var operationName = "CREATE" ++ "-" ++ "SALE"
 			<flow-ref doc:name="Create Sale in Cin7" doc:id="30ab369c-9336-4a45-8fff-c7834682e469" name="sf-cin7-implementation-subFlow" />
 			<choice doc:name="Choice" doc:id="c847a735-1ce0-4426-b863-60fa12dde3e0">
 				<when expression="#[!isEmpty(vars.salePayloadFromSF.OrderItems)]">
-					<!-- [STUDIO:"Flow Reference"]<flow-ref doc:name="Flow Reference" doc:id="047364bd-872d-4b31-9f4c-749ce4258177" /> [STUDIO] -->
 					<ee:transform doc:name="Create Order Request" doc:id="766fb8a0-c293-4ec8-b07b-50ab47f3bf00">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0

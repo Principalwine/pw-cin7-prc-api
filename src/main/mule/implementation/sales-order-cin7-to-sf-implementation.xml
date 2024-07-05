@@ -91,7 +91,7 @@ var creditItems = vars.salesOrderDetails.data.CreditNotes default [] map(item, i
 	Account: {
 		Cin7ID__c: order.CustomerID
 	},
-	
+	Error_log__c: "",
 	EffectiveDate: order.SaleOrderDate,
 	LastModifiedOn__c: order.LastModifiedOn,	
 	Status: order.Status, //This is mandatory

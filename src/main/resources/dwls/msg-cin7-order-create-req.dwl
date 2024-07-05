@@ -12,7 +12,10 @@ var orderItems = payload.requestBody.records
                 "Price": item.UnitPrice,  
                 "Discount": item.Discount__c default 0,         
                 "TaxRule": item.Tax_Rule__c,
-                "Total": ((item.Quantity * item.UnitPrice) - (item.Quantity * item.UnitPrice)*((item.Discount__c default 0)/ 100))as String{format: "#.00"} as Number
+                //"Total": ((item.Quantity * item.UnitPrice) - (item.Quantity * item.UnitPrice)*((item.Discount__c default 0)/ 100))as String{format: "#.00"} as Number,
+        		"Total": (((item.UnitPrice *((100 - (item.Discount__c default 0))/100)) as String{format: "#.0000"} as Number) * item.Quantity) as String{format: "#.00"} as Number,
+        		//"Tax": ((((item.Quantity * item.UnitPrice) - (item.Quantity * item.UnitPrice)*((item.Discount__c default 0)/ 100))as String{format: "#.00"} as Number)*((item.Tax_Percent__c default 0)/100))as String{format: "#.00"} as Number
+        		"Tax": (((((item.UnitPrice *((100 - (item.Discount__c default 0))/100)) as String{format: "#.0000"} as Number) * item.Quantity) as String{format: "#.00"} as Number)*((item.Tax_Percent__c default 0)/100))as String{format: "#.00"} as Number
         }else {} )filter ((items, index2) -> !isEmpty(items.ProductID)),
         
      "AdditionalCharges": (orderItems map(item, index)->
@@ -24,29 +27,9 @@ var orderItems = payload.requestBody.records
                 "Discount": item.Discount__c default 0,         
                 "TaxRule": item.Tax_Rule__c,
                 //"Tax": 0,
-                "Total": ((item.Quantity * item.UnitPrice) - (item.Quantity * item.UnitPrice)*((item.Discount__c default 0)/ 100))as String{format: "#.00"} as Number
+                //"Total": ((item.Quantity * item.UnitPrice) - (item.Quantity * item.UnitPrice)*((item.Discount__c default 0)/ 100))as String{format: "#.00"} as Number
+                "Total": (((item.UnitPrice *((100 - (item.Discount__c default 0))/100)) as String{format: "#.0000"} as Number) * item.Quantity) as String{format: "#.00"} as Number,
+        		"Tax": (((((item.UnitPrice *((100 - (item.Discount__c default 0))/100)) as String{format: "#.0000"} as Number) * item.Quantity) as String{format: "#.00"} as Number)*((item.Tax_Percent__c default 0)/100))as String{format: "#.00"} as Number
         }else {}  )filter ((items, index2) -> !isEmpty(items.Description))        
     
 }
-
-
-
-
-
-//%dw 2.0
-//output application/json
-//var item = vars.requestPayload.requestBody.payload
-//---
-//{
-//    "SaleID": item.Cin7OrderId__c,
-//    "Status": "DRAFT" default item.Status__c,
-//    "Lines": [
-//        {
-//                "ProductID": item.Cin7_ProductId__c,
-//                "Quantity": item.Quantity,
-//                "Price": item.UnitPrice,             
-//                "TaxRule": item.Tax_Rule__c,
-//                "Total": item.Quantity * item.UnitPrice
-//        }            
-//    ]
-//}

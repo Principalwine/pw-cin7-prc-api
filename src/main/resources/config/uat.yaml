@@ -2,10 +2,10 @@ app:
   autodiscovery: "19513881"
 
 salesforce:
-  username: "siddhartha.pal@nttdata.com.sachin"
-  password: "![ItAaX7qTsEywysnn8T89eQ==]"
-  token: "![VaF4aS6gYQeAwFtFlIkTb+xzP8DRx8oNePxa6wSHz7M=]"
-  url: "https://principalwine--sachin.sandbox.my.salesforce.com/services/Soap/u/58.0"
+  username: "sameet.bhole@nttdata.com.uat"
+  password: "![kBzmZcM+8uDoYnf29SyNkA==]"
+  token: "![3u4MDhoUfnhrtkSHOs2+XyeMox7Hw7ZvQzLdz5Dt6kk=]"
+  url: "https://principalwine--uat.sandbox.my.salesforce.com/services/Soap/u/58.0"
   account-event: "/data/Cin7Events__chn"
   sale-event: "/data/OrderChangeEvent"
   order-event: "/data/OrderItemChangeEvent"
@@ -85,6 +85,10 @@ operation:
   GET-ACCOUNT:
     dwl: "msg-null-get-req"
     path: "/api/customers"
+    
+  GET-TAX:
+    dwl: "msg-null-get-req"
+    path: "/api/tax"
     
 cin7-sys-api:
   host: "pw-cin7-sys-api-uat-1aarxz.5sc6y6-2.usa-e2.cloudhub.io"

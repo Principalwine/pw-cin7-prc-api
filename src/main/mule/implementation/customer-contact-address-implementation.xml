@@ -51,7 +51,7 @@ output application/json
 				</on-error-propagate>
 			</error-handler>
 		</try>
-		<ee:transform doc:name="Cusomers Upsert Payload" doc:id="52977dc6-1b7c-4a02-9b8b-38f87f85b249" >
+		<ee:transform doc:name="Customers Upsert Payload" doc:id="52977dc6-1b7c-4a02-9b8b-38f87f85b249" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -228,6 +228,11 @@ vars.system default "Cin7 to Salesforce sync."
 			</on-error-propagate>
 		</error-handler>
 	</flow>
+	<sub-flow name="sales-representative-and-customer-implementation-subflow" doc:id="d064e6c6-41f6-4487-87bd-a024ba705217">
+		<set-variable value="#[payload.CustomerDetailsList[0].SalesRepresentative]" doc:name="salesRepresentative" doc:id="91789eeb-072a-4079-97a0-21f1d3b8ca71" variableName="salesRepresentative" />
+		<flow-ref doc:name="check-sales-represtative-subflow" doc:id="71e1e014-a6ec-40bd-9748-37905ca4cbfa" name="check-sales-representative-subflow" />
+		<flow-ref doc:name="customer-contact-address-implementation-subflow" doc:id="824b5138-a716-4242-9de0-eddea7295986" name="customer-contact-address-implementation-subflow" />
+	</sub-flow>
 	<sub-flow name="check-sales-representative-subflow" doc:id="aa70164d-ad0a-4516-9876-cbe118a75855" >
 		<ee:transform doc:name="query-sales" doc:id="d26295af-32b1-4184-8ec9-2a69232ee4c9" >
 			<ee:message >

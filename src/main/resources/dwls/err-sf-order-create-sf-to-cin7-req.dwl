@@ -9,7 +9,7 @@ var cin7OrderNum = vars.requestPayload.orderNumber
   	"externalField": "Cin7_ID__c",
   	"data": [ {
 		"Cin7_ID__c": cin7OrderNum,
-	    //Cin7_Id__c: payload.data.ID,
+	    
 	    LastModifiedOn__c: now(),
 	    "Account": {
 				"Cin7ID__c": request[0].Cin7_AccountID__c

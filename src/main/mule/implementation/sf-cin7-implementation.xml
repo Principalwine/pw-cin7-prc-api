@@ -7,6 +7,17 @@
 	xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="get-customer-sales-representative-subflow" doc:id="a0a7ec32-8008-4bf8-843b-26583908a642" >
+		<choice doc:name="Choice" doc:id="1931cdcf-ccfb-48ac-bbc7-0032a4628711">
+						<when expression='#[vars.requestPayload.operation contains "CUSTOMER"]'>
+							<set-variable value="#[payload.data.SalesRepresentative]" doc:name="salesRepresentative" doc:id="3d865c03-9709-4a80-8d48-0c8ef848c50b" variableName="salesRepresentative" />
+							<flow-ref doc:name="check-sales-representative-subflow" doc:id="0a5a43a4-a6f3-46c5-8493-03d968c9f2bf" name="check-sales-representative-subflow" />
+						</when>
+						<otherwise>
+							<logger level="DEBUG" doc:name="Log Info" doc:id="9da99bd0-c18e-409a-aa4a-318e5aaf456b" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Info",&#10;  MetaData: "Request to SF",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
+						</otherwise>
+					</choice>
+	</sub-flow>
 	<sub-flow name="sf-cin7-implementation-subFlow" doc:id="652a8f34-87ee-41b0-ae1f-4e0a15b51abc">
 		<try doc:name="Try" doc:id="35883cd7-969d-4490-a7de-aca78a76a7c8">
 			<set-variable value="#[payload]" doc:name="requestPayload" doc:id="9ad2f3b5-a245-43ef-864d-bf9321e3f60b" variableName="requestPayload" />
@@ -26,17 +37,9 @@ vars.requestPayload.httpRequest.headers]]]></http:headers>
 			<choice doc:name="Choice" doc:id="a9c47974-fd5c-468c-b084-ce44c5945431">
 				<when expression="#[attributes.statusCode == 200 or attributes.statusCode == 201]">
 					<set-variable value="#[payload]" doc:name="Cin7 Response" doc:id="898f21e9-8d0a-4c5e-b9af-12efb31bd156" variableName="cin7Response"/>
-					<choice doc:name="Choice" doc:id="1931cdcf-ccfb-48ac-bbc7-0032a4628711">
-						<when expression='#[vars.requestPayload.operation contains "CUSTOMER"]'>
-							<set-variable value="#[payload.data.SalesRepresentative]" doc:name="salesRepresentative" doc:id="3d865c03-9709-4a80-8d48-0c8ef848c50b" variableName="salesRepresentative" />
-							<flow-ref doc:name="check-sales-representative-subflow" doc:id="0a5a43a4-a6f3-46c5-8493-03d968c9f2bf" name="check-sales-representative-subflow" />
-						</when>
-						<otherwise>
-							<logger level="DEBUG" doc:name="Log Info" doc:id="9da99bd0-c18e-409a-aa4a-318e5aaf456b" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Info",&#10;  MetaData: "Request to SF",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
-						</otherwise>
-					</choice>
-						<choice doc:name="Choice" doc:id="34866d16-7848-412d-be46-2659d649a1c8">
-							<when expression='#[(vars.requestPayload.operation == "UPSERT-SALE-ORDER" or vars.requestPayload.operation == "GET-LOCATION" or vars.requestPayload.operation == "GET-ACCOUNT") and vars.requestPayload.httpRequest.method == "GET"]'>
+						<flow-ref doc:name="Customer-sales-represenative-subflow" doc:id="54ba38ea-4eb9-4df2-805b-c5b05f5a33c9" name="get-customer-sales-representative-subflow" />
+					<choice doc:name="Choice" doc:id="34866d16-7848-412d-be46-2659d649a1c8">
+							<when expression='#[(vars.requestPayload.operation == "UPSERT-SALE-ORDER" or vars.requestPayload.operation == "GET-LOCATION" or vars.requestPayload.operation == "GET-TAX" or vars.requestPayload.operation == "GET-ACCOUNT") and vars.requestPayload.httpRequest.method == "GET"]'>
 								<logger level="INFO" doc:name="Logger" doc:id="08379bda-40d5-4dfd-b0d4-3c9f1255e1cd" message='#["Sales Order Details from Cin7 Fetched Successfully"]' />
 							</when>
 							<otherwise>

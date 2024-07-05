@@ -86,6 +86,10 @@ operation:
     dwl: "msg-null-get-req"
     path: "/api/customers"
     
+  GET-TAX:
+    dwl: "msg-null-get-req"
+    path: "/api/tax"
+    
 cin7-sys-api:
   host: "pw-cin7-sys-api-dev-o4o3m1.5sc6y6-2.usa-e2.cloudhub.io"
   protocol: "https"
