@@ -1,21 +1,21 @@
 app:
-  autodiscovery: "19513881"
+  autodiscovery: "19717206"
 
 salesforce:
-  username: "sachin26.sharma@nttdata.com.muleuat"
-  password: "![kBzmZcM+8uDoYnf29SyNkA==]"
-  token: "![i8tUVeHhS9YHcA4jBistJTpw1z0Y4ZpKYuq4aLZz6Mo=]"
-  url: "https://principalwine--uat.sandbox.my.salesforce.com/services/Soap/u/58.0"
+  username: "sachin26.sharma@nttdata.com"
+  password: "![ax5wJJG6HjmdhZl7+YJwhQ==]"
+  token: "![+VYZm/eTM7U0IfN3tW6D8UANT1k1iq8RU6l0E4GGSAc=]"
+  url: "https://principalwine.my.salesforce.com/services/Soap/u/58.0"
   account-event: "/data/Cin7Events__chn"
   sale-event: "/data/OrderChangeEvent"
   order-event: "/data/OrderItemChangeEvent"
   
 sfdc:
   basepath: "/api/v1"
-  host: "pw-sf-sys-api-uat-1aarxz.5sc6y6-2.usa-e2.cloudhub.io"
+  host: ""
   port: ""
-  client-id: "![dSnqtH73b+K9XWFeVWquErgXi9NQsw1cBCJsHBG+sf9d1/QugFivAQ==]"
-  client-secret: "![KcmRb2Ji/e7M+J0aZHTssR59lPrjftCgPfgNeAxP3aQ80HuYTwF5mg==]"
+  client-id: "![PD1d21lmbHZOJ2kmRqGS5Fh7k6qpUJjRpC6tTUYKrd0RQGEgdnbx7g==]"
+  client-secret: "![JyVZ+THxynW57cI1yQdFXqZb0mm9b6Tdb5ipCQwl96WMvBeE3+7FMw==]"
   upsert: "/upsert"
   query: "/query"
   
@@ -91,10 +91,10 @@ operation:
     path: "/api/tax"
     
 cin7-sys-api:
-  host: "pw-cin7-sys-api-uat-1aarxz.5sc6y6-2.usa-e2.cloudhub.io"
+  host: ""
   protocol: "https"
-  client_id: "![V/IFXu3qOniFumDV7Xy3Q7/3mUfmRnfIm5DAAgm0yCybiQeKOJKlpg==]"
-  client_secret: "![Z+DnxnnqhhJLgjvsIu4CwTjf5KknJoRHEKlwpRtp8hQjjd73tuM++w==]"
+  client_id: "![+F2xBhH79zuZOkyra7BLkBc8yUNZH4sNugW+7g7kFkWY3xXEkG7H1g==]"
+  client_secret: "![LUP9HE402sgaC3p1rlYzGxxcoHTDuQqj5K2wZtLTqmARL2Mu3Wjmvw==]"
   
 request:
   response:
@@ -105,4 +105,4 @@ email:
   port: "587"
   from: "james@principalwine.com.au"
   recipients: "divyansh.r.kumar@apisero.com, sameet.bhole@apisero.com, prabhat.kumar@apisero.com"
-  password: "![bJQhTx9JApX86gnBXmpZTqLBji1Q9+LS]"
+  password: "![]"
