@@ -1,4 +1,5 @@
 %dw 2.0
+import withMaxSize from dw::core::Strings
 output application/json
 var order = vars.salesOrderDetails.data default {}
 ---
@@ -48,7 +49,7 @@ var order = vars.salesOrderDetails.data default {}
 	//EndDate: "2024-06-07T00:00:00", This is shipBy
 	
 	LastModifiedOn__c: order.LastModifiedOn,
-	Note__c: order.Note,
+	Note__c: (order.Note default "") withMaxSize 254,
 	Customer_Reference__c: order.CustomerReference,
 	COGS_Amount__c: order.COGSAmount,
 	
@@ -64,13 +65,13 @@ var order = vars.salesOrderDetails.data default {}
 	Combined_Tracking_Numbers__c: order.CombinedTrackingNumbers,
 	Carrier__c: order.Carrier,
 	Currency_Rate__c: order.CurrencyRate,
-	Sales_Representative__c: if(sizeOf(vars.query)== 1)vars.query[0].Id else vars.query[0].Id,
+	Sales_Representative__c: if(sizeOf(vars.query)== 1)vars.query[0].Id else (vars.query filter ($.Name != "Patrick Sullivan")).Id,
 	Type__c: order.Type,
 	Source_Channel__c: order.SourceChannel,
 	ExternalID__c: order.ExternalID,
 	Service_Only__c: order.ServiceOnly,
 	Tax_Iclusive__c: if(order.TaxCalculation == "Inclusive") true else false,
-	Comments__c: order.Comments,
+	Comments__c: (order.Comments default "") withMaxSize 254,
 	Tax__c: order.Order.Tax default 0,
 	Total_Amount__c: order.Order.Total default 0,
 	Total_Before_Tax__c: order.Order.TotalBeforeTax default 0,

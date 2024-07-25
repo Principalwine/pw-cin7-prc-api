@@ -66,6 +66,15 @@ output application/json
 						</ee:variables>
 					</ee:transform>
 					<flow-ref doc:name="salesforce-error-update-subflow" doc:id="88dcb6d7-04ae-49fa-8226-dffa7894ee00" name="salesforce-error-update-subflow" />
+					<ee:transform doc:name="Error Payload" doc:id="aa844910-31d0-478f-8d06-0bba8bb968cb">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.errorPayload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<flow-ref doc:name="send-email-subflow" doc:id="aafa688a-6ea5-4e05-b9ae-5180c35092f7" name="send-email-subflow" />
 				</otherwise>
 			</choice>
 			<logger level="DEBUG" doc:name="Log Inbound" doc:id="8ffdc2a5-ebfc-4593-84b0-10eda5468b1b" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Inbound",&#10;  MetaData: "Request to cin system api completed",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
@@ -131,19 +140,6 @@ output application/json
 	<sub-flow name="salesforce-error-update-subflow" doc:id="5e22fd09-6023-4bf6-8e1a-6d03e2198cb5" >
 		<ee:dynamic-evaluate doc:name="Error SF Request" doc:id="b75f5ce5-c485-402d-a723-747f99560524" expression="#[readUrl(&quot;classpath://dwls/&quot; ++ (vars.requestPayload.errDwl as String) ++ &quot;.dwl&quot;, 'text/plain')]" />
 		<flow-ref doc:name="request-to-salesforce-upsert-subflow" doc:id="9655d84c-44b1-4983-99a5-e8749f13cea1" name="request-to-salesforce-upsert-subflow" />
-		<ee:transform doc:name="Error Variables" doc:id="9dc80544-eec1-461e-996d-39dc43e14764">
-						<ee:message>
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
----
-vars.errorPayload]]></ee:set-payload>
-						</ee:message>
-						<ee:variables>
-							<ee:set-variable variableName="system"><![CDATA[vars.system default "Salesforce to Cin7 Sync."]]></ee:set-variable>
-							<ee:set-variable variableName="entity"><![CDATA[vars.entity default (vars.requestPayload.operation default "Customer/Contact " ++ " Sync.")]]></ee:set-variable>
-						</ee:variables>
-					</ee:transform>
-		<flow-ref doc:name="send-email-subflow" doc:id="329b6a0a-28c0-4434-9d62-6e447147b4a8" name="send-email-subflow" />
 	</sub-flow>
 	<sub-flow name="get-account-contact-address-from-sf" doc:id="10dacfe4-bb4a-49ae-947f-1636d63b7876" >
 		<try doc:name="Try" doc:id="a7a1125a-f3a0-480a-98e9-40625347a720" >

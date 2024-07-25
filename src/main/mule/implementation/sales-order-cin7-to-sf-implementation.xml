@@ -71,7 +71,30 @@ output application/json
 					</on-error-propagate>
 				</error-handler>
 			</try>
-			<flow-ref doc:name="Create Order Line Items" doc:id="a4aba81d-5244-49b6-a442-090bb2c71a59" name="create-order-line-items-subflow" />
+			<try doc:name="Try" doc:id="0cd80d3e-92bb-4079-9586-e8bfa5055f53" >
+				<flow-ref doc:name="Create Order Line Items" doc:id="a4aba81d-5244-49b6-a442-090bb2c71a59" name="create-order-line-items-subflow" />
+				<error-handler >
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4b238946-bb32-45d3-95d9-20eb70fc4712" >
+						<ee:transform doc:name="Error Transformation" doc:id="54d019fe-8607-46bc-908f-b434da1fd7f2" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
+	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+}]]></ee:set-payload>
+							</ee:message>
+							<ee:variables >
+								<ee:set-variable variableName="entity" ><![CDATA["Sales Order Sync"]]></ee:set-variable>
+								<ee:set-variable variableName="system" ><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+						<flow-ref doc:name="Update SF Error" doc:id="caa6f3c9-ae2c-4eb0-9ab6-b31278170c1d" name="salesforce-error-update-subflow" />
+					</on-error-propagate>
+				</error-handler>
+			</try>
 			<ee:transform doc:name="Update Order Status and After Credit Note Details" doc:id="4b6ea12d-5e5f-40d0-b6e1-060a773087e8">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
@@ -217,30 +240,7 @@ output application/json
 					<ee:set-payload resource="dwls/msg-sf-order-product-upsert-req.dwl" />
 				</ee:message>
 			</ee:transform>
-					<try doc:name="Try" doc:id="0b06ae9e-3835-4145-b06e-6e1773c700fa">
 				<flow-ref doc:name="Update Order Product" doc:id="233bff0f-b03d-419f-a18c-95ae42708f03" name="request-to-salesforce-upsert-subflow" />
-				<error-handler>
-					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="47a8531d-f577-4251-81cf-63a0bcfbef59">
-						<ee:transform doc:name="Error Transformation" doc:id="54c58d4a-ff17-4a1a-a5ea-21f98f1d7e93">
-							<ee:message>
-								<ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
-	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
-	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
-}]]></ee:set-payload>
-							</ee:message>
-							<ee:variables>
-								<ee:set-variable variableName="entity"><![CDATA["Sales Order Sync"]]></ee:set-variable>
-								<ee:set-variable variableName="system"><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
-							</ee:variables>
-						</ee:transform>
-								<flow-ref doc:name="Flow Reference" doc:id="b0ef8450-ff3e-4ec0-bd52-b47b3f8603f2" name="salesforce-error-update-subflow" />
-					</on-error-propagate>
-				</error-handler>
-			</try>
 				</when>
 				<otherwise>
 					<logger level="INFO" doc:name="No Order Line Items to Process" doc:id="e521579a-30b4-48e6-a9fa-cd981e702a0b" message="No Order Line Items to Process" />
