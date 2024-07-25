@@ -245,7 +245,7 @@ output application/json
 	"objectName": "User",
 	"fields" : "Id, Name",
 	"where": {
-	"Name" : vars.salesRepresentative ++ "','James Robinson"
+	"Name" : vars.salesRepresentative ++ "','Patrick Sullivan"
 }
 }]]></ee:set-variable>
 			</ee:variables>
