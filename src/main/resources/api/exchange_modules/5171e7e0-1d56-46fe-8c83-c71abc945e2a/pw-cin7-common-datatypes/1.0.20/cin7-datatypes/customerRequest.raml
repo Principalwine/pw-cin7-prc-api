@@ -12,46 +12,46 @@ properties:
       additionalProperties: false
       properties:
         Event:
-          type: string
+          type: string | nil
           required: false
         ID:
-          type: string
+          type: string | nil
           required: false
         Name:
-          type: string
+          type: string | nil
           required: false
         Currency:
-          type: string
+          type: string | nil
           required: false
         PaymentTerm:
-          type: string
+          type: string | nil
           required: false
         Discount:
-          type: number
+          type: number | nil
           required: false
         TaxRule:
-          type: string
+          type: string | nil
           required: false
         Carrier:
-          type: string
+          type: string | nil
           required: false
         SalesRepresentative:
-          type: string
+          type: string | nil
           required: false
         Location:
-          type: string
+          type: string | nil
           required: false
         Comments:
           type: string | nil
           required: false
         AccountReceivable:
-          type: string
+          type: string | nil
           required: false
         RevenueAccount:
-          type: string
+          type: string | nil
           required: false
         PriceTier:
-          type: string
+          type: string | nil
           required: false
         TaxNumber:
           type: string | nil
@@ -87,22 +87,22 @@ properties:
           type: string | nil
           required: false
         AttributeSet:
-          type: string
+          type: string | nil
           required: false
         Tags:
           type: string | nil
           required: false
         Status:
-          type: string
+          type: string | nil
           required: false
         CreditLimit:
-          type: number
+          type: number | nil
           required: false
         IsOnCreditHold:
-          type: boolean
+          type: boolean | nil
           required: false
         LastModifiedOn:
-          type: string
+          type: string | nil
           required: false
         Addresses:
           type: array
@@ -111,31 +111,31 @@ properties:
             type: object
             properties:
               Line1:
-                type: string
+                type: string | nil
                 required: false
               Line2:
-                type: string
+                type: string | nil
                 required: false
               City:
-                type: string
+                type: string | nil
                 required: false
               State:
-                type: string
+                type: string | nil
                 required: false
               Postcode:
-                type: string
+                type: string | nil
                 required: false
               Country:
-                type: string
+                type: string | nil
                 required: false
               Type:
-                type: string
+                type: string | nil
                 required: false
               DefaultForType:
-                type: boolean
+                type: boolean | nil
                 required: false
               ID:
-                type: string
+                type: string | nil
                 required: false
         
         Contacts:
@@ -144,7 +144,7 @@ properties:
             type: object
             properties:
               Name:
-                type: string
+                type: string | nil
                 required: false
               JobTitle:
                 type: string | nil
@@ -165,21 +165,21 @@ properties:
                 type: string | nil
                 required: false
               Default:
-                type: boolean
+                type: boolean | nil
                 required: false
               Comment:
                 type: string | nil
                 required: false
               IncludeInEmail:
-                type: boolean
+                type: boolean | nil
                 required: false
               MarketingConsent:
-                type: number
+                type: number | nil
                 required: false
               ID:
-                type: string
+                type: string | nil
                 required: false
     required: false
   EventType: 
-    type: string
+    type: string | nil
     required: false

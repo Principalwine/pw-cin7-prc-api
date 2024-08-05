@@ -14,7 +14,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<app.runtime>4.5.1</app.runtime>
-		<mule.maven.plugin.version>4.0.0</mule.maven.plugin.version>
+		<mule.maven.plugin.version>4.2.0</mule.maven.plugin.version>
 	</properties>
 
 	<build>
@@ -76,7 +76,7 @@
 		<dependency>
 			<groupId>5171e7e0-1d56-46fe-8c83-c71abc945e2a</groupId>
 			<artifactId>cin7-prc-api</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.4</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
 		</dependency>
