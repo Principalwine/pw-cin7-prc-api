@@ -22,6 +22,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<try doc:name="Try" doc:id="35883cd7-969d-4490-a7de-aca78a76a7c8">
 			<set-variable value="#[payload]" doc:name="requestPayload" doc:id="9ad2f3b5-a245-43ef-864d-bf9321e3f60b" variableName="requestPayload" />
 			<ee:dynamic-evaluate doc:name="Set Payload" doc:id="088cf8cd-7200-4e66-8900-64f50c7c12ba" expression="#[readUrl(&quot;classpath://dwls/&quot; ++ (vars.requestPayload.dwl as String) ++ &quot;.dwl&quot;, 'text/plain')]" />
+			<set-variable value="#[payload]" doc:name="Input Payload" doc:id="bb605cbc-70b8-4863-a586-310bbacf210f" variableName="cin7InputVariable"/>
 			<logger level="DEBUG" doc:name="Log Outbound" doc:id="1235c6d3-0bd1-40c5-83bf-c657ae1f02dd" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;  flowName: flow.name,&#10;  apiName: app.name,&#10;  Name: "Log Outbound",&#10;  MetaData: "Request to cin system api started",&#10;  correlationId: correlationId,&#10;  data: payload&#10;}]' />
 			<until-successful maxRetries="5" doc:name="Until Successful" doc:id="86a9fdf6-90a0-4df9-afa2-dedef669145f">
 			<http:request method="#[vars.requestPayload.httpRequest.method]" doc:name="Cin7-Sys-Api" doc:id="83ada24a-e3fc-46e3-b2c7-d93d503e833e" url='#[(vars.requestPayload.httpRequest.protocol as String) ++ "://" ++ (vars.requestPayload.httpRequest.host as String)  ++ (vars.requestPayload.httpRequest.url as String)]'>
@@ -61,7 +62,13 @@ output application/json
 {
 	errorCode: payload.errorCode default 500,
 	description: payload.description default "Unknown description",
-	message: payload.message default "Error occured while processing the request in cin7-proc-api"
+	message: payload.message default "Error occured while processing the request in cin7-proc-api",
+	primaryKeys: {
+		("Name": vars.cin7InputVariable.Name) if(!isEmpty(vars.cin7InputVariable.Name)),
+		("Customer Id": vars.cin7InputVariable.ID) if(!isEmpty(vars.cin7InputVariable.ID)),
+		("Customer Cin7 Id": vars.cin7InputVariable.CustomerID) if(!isEmpty(vars.cin7InputVariable.CustomerID)),
+		("Sale Id": vars.cin7InputVariable.SaleID) if(!isEmpty(vars.cin7InputVariable.SaleID))
+	}
 }]]></ee:set-variable>
 						</ee:variables>
 					</ee:transform>

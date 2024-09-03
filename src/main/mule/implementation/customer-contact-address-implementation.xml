@@ -40,7 +40,12 @@ output application/json
 {
 	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
 	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
-	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api",
+	primaryKeys: {
+		"Customer Name": vars.customer[1][0].Name,
+		"Cin7 Id": vars.customer[1][0].Cin7ID__c
+	}
+	
 }]]></ee:set-payload>
 						</ee:message>
 						<ee:variables >
@@ -80,7 +85,11 @@ output application/json
 {
 	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
 	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
-	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api",
+	primaryKeys: {
+		"Name": vars.customer[1][0].Name,
+		"Cin7 Id": vars.customer[1][0].Cin7ID__c
+	}
 }]]></ee:set-payload>
 						</ee:message>
 						<ee:variables >
@@ -119,7 +128,11 @@ output application/json
 {
 	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
 	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
-	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api",
+	primaryKeys: {
+		"Customer Name": vars.customer[1][0].Name,
+		"Customer Cin7 Id": vars.customer[1][0].Cin7ID__c
+	}
 }]]></ee:set-payload>
 						</ee:message>
 								<ee:variables >
@@ -148,24 +161,7 @@ output application/json
   "externalField": "Cin7ID__c",
   "data": vars.address[0].Data
 }
-
-//{
-//  "objectName": "Address",
-//  "externalField": "Cin7ID__c",
-//  "data": flatten(vars.address[1][0].Data map ((address, index) -> {
-//    Cin7ID__c: address.Cin7ID__c,
-//    street: address.street,
-//    city: address.city,
-//    state: address.state,
-//    postalCode: address.postalCode,
-//    country: address.country,
-//    AddressType: address.AddressType,
-//    DefaultForType__c: address.DefaultForType__c,
-//    Parent: {
-//        Cin7ID__c: vars.address[0][0].location
-//    }
-//}))
-//}]]></ee:set-payload>
+]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 				<try doc:name="Try" doc:id="8c84c455-cd9c-46b8-affe-7bbb37e5c2c3">
@@ -180,7 +176,11 @@ output application/json
 {
 	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
 	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
-	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api",
+	primaryKeys: {
+		"Customer Name": vars.customer[1][0].Name,
+		"Customer Cin7 Id": vars.customer[1][0].Cin7ID__c
+	}
 }]]></ee:set-payload>
 						</ee:message>
 								<ee:variables >
@@ -207,7 +207,8 @@ output application/json
 {
 	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
 	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
-	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api",
+	primaryKeys: payload.primaryKeys default "Unknown error. Please check logs for more information."
 }]]></ee:set-payload>
 					</ee:message>
 					<ee:variables >

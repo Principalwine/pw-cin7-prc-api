@@ -19,7 +19,11 @@ output application/json
 {
 	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
 	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
-	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api",
+	primaryKeys: {
+		"Sale Id": vars.requestPayload.requestBody.SaleID,
+		"Order Number": vars.requestPayload.requestBody.SaleOrderNumber
+	}
 }]]></ee:set-payload>
 							</ee:message>
 							<ee:variables>
@@ -159,7 +163,7 @@ output application/json
 								<ee:set-variable variableName="system"><![CDATA["Cin7 to Salesforce sync."]]></ee:set-variable>
 							</ee:variables>
 						</ee:transform>
-						<flow-ref doc:name="Flow Reference" doc:id="14200dd0-998e-4c3d-a33a-e54d3f2b6683" name="salesforce-error-update-subflow" />
+						<flow-ref doc:name="Update SF Error" doc:id="14200dd0-998e-4c3d-a33a-e54d3f2b6683" name="salesforce-error-update-subflow" />
 					</on-error-propagate>
 				</error-handler>
 			</try>
@@ -173,7 +177,11 @@ output application/json
 {
 	errorCode: error.muleMessage.typedAttributes.statusCode default 500,
 	errorDescription: error.muleMessage.typedValue.errorDescription default error.description,
-	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api"
+	message: vars.errorContext default "Error occurred while processing the request in pw-cin7-prc-api",
+	primaryKeys: {
+		"Sale Id": vars.requestPayload.requestBody.SaleID,
+		"Order Number": vars.requestPayload.requestBody.SaleOrderNumber
+	}
 }]]></ee:set-payload>
 						</ee:message>
 						<ee:variables>

@@ -19,7 +19,7 @@ var defLocation = payload.LocationList[0]
             Address__Street__s: defLocation.AddressLine2,
             Address__PostalCode__s: defLocation.AddressZipPostCode,
             Address__StateCode__s: defLocation.AddressStateProvince,
-            Address__CountryCode__s: countries::getCountryCode(defLocation.AddressCountry as String),
+            Address__CountryCode__s: countries::getCountryCode((defLocation.AddressCountry default "") as String),
 
         }]
         
